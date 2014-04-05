@@ -78,7 +78,7 @@ public class MainActivity extends FragmentActivity implements
 			public void onPageScrollStateChanged(int arg0) {
 			}
 		});
-		new Login().execute();
+		new Login().execute("a", "a");
 	}
 
 	@Override
@@ -141,10 +141,9 @@ public class MainActivity extends FragmentActivity implements
 			System.out.println(result);
 			return result;
 		}
-
 	}
 
-	private class Login extends AsyncTask<String, String, String> {
+	private class Login extends AsyncTask<String, Void, String> {
 
 		@Override
 		protected String doInBackground(String... params) {
@@ -160,8 +159,8 @@ public class MainActivity extends FragmentActivity implements
 			jsonobj = new JSONObject();
 			try {
 				// adding some keys
-				jsonobj.put("username", "a");
-				jsonobj.put("password", "a");
+				jsonobj.put("username", params[0]);
+				jsonobj.put("password", params[1]);
 
 			} catch (JSONException ex) {
 				ex.printStackTrace();
@@ -172,8 +171,8 @@ public class MainActivity extends FragmentActivity implements
 			StringEntity se;
 			try {
 				List<NameValuePair> pairs = new ArrayList<NameValuePair>();
-				pairs.add(new BasicNameValuePair("username", "a"));
-				pairs.add(new BasicNameValuePair("password", "a"));
+				pairs.add(new BasicNameValuePair("username", params[0]));
+				pairs.add(new BasicNameValuePair("password", params[1]));
 				httppostreq.setEntity(new UrlEncodedFormEntity(pairs)); 
 				/*
 				se = new StringEntity(jsonobj.toString());
@@ -202,6 +201,13 @@ public class MainActivity extends FragmentActivity implements
 			System.out.println(result);
 			System.out.println("wtf");
 			return result;
+		}
+
+		@Override
+		protected void onPostExecute(String result) {
+			// Really, it would be cleaner to use an activity transition,
+			// but the log in activity doesn't exist yet
+			new GetFriendTasks().execute();
 		}
 
 	}
