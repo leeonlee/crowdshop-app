@@ -78,7 +78,7 @@ public class MainActivity extends FragmentActivity implements
 			public void onPageScrollStateChanged(int arg0) {
 			}
 		});
-		new CallPost().execute();
+		new Login().execute();
 	}
 
 	@Override
@@ -111,7 +111,7 @@ public class MainActivity extends FragmentActivity implements
 		return string;
 	}
 
-	private class CallRest extends AsyncTask<String, String, String> {
+	private class GetFriendTasks extends AsyncTask<String, String, String> {
 
 		@Override
 		protected String doInBackground(String... params) {
@@ -144,7 +144,7 @@ public class MainActivity extends FragmentActivity implements
 
 	}
 
-	private class CallPost extends AsyncTask<String, String, String> {
+	private class Login extends AsyncTask<String, String, String> {
 
 		@Override
 		protected String doInBackground(String... params) {
