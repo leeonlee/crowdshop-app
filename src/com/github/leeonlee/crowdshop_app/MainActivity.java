@@ -78,7 +78,7 @@ public class MainActivity extends FragmentActivity implements
 			public void onPageScrollStateChanged(int arg0) {
 			}
 		});
-		new Login().execute();
+		new CreateTask().execute();
 	}
 
 	@Override
@@ -144,6 +144,43 @@ public class MainActivity extends FragmentActivity implements
 
 	}
 
+	private class CreateTask extends AsyncTask<String, String, String> {
+		@Override
+		protected String doInBackground(String... params) {
+			String urlString = "http://crowdshop-server.herokuapp.com/createtask/";
+
+			String result = "";
+
+			DefaultHttpClient httpclient = new DefaultHttpClient();
+			HttpPost httppostreq = new HttpPost(urlString);
+			try {
+				List<NameValuePair> pairs = new ArrayList<NameValuePair>();
+				pairs.add(new BasicNameValuePair("username", "a"));
+				pairs.add(new BasicNameValuePair("title", "this is a title"));
+				pairs.add(new BasicNameValuePair("desc", "this is a desc"));
+				pairs.add(new BasicNameValuePair("threshold", "4"));
+				httppostreq.setEntity(new UrlEncodedFormEntity(pairs));
+				HttpResponse httpresponse = httpclient.execute(httppostreq);
+				HttpEntity resultentity = httpresponse.getEntity();
+				InputStream inputstream = resultentity.getContent();
+				String stuff = convertInputStream(inputstream);
+				System.out.println(stuff);
+
+			} catch (UnsupportedEncodingException e1) {
+				e1.printStackTrace();
+			} catch (ClientProtocolException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+
+			System.out.println(result);
+			System.out.println("wtf");
+			return result;
+		}
+
+	}
+
 	private class Login extends AsyncTask<String, String, String> {
 
 		@Override
@@ -151,9 +188,6 @@ public class MainActivity extends FragmentActivity implements
 			String urlString = "http://crowdshop-server.herokuapp.com/loginview/";
 
 			String result = "";
-			InputStream in = null;
-			URL url = null;
-			HttpURLConnection urlConnection = null;
 
 			JSONObject jsonobj; // declared locally so that it destroys after
 								// serving its purpose
@@ -169,33 +203,22 @@ public class MainActivity extends FragmentActivity implements
 
 			DefaultHttpClient httpclient = new DefaultHttpClient();
 			HttpPost httppostreq = new HttpPost(urlString);
-			StringEntity se;
 			try {
 				List<NameValuePair> pairs = new ArrayList<NameValuePair>();
 				pairs.add(new BasicNameValuePair("username", "a"));
 				pairs.add(new BasicNameValuePair("password", "a"));
-				httppostreq.setEntity(new UrlEncodedFormEntity(pairs)); 
-				/*
-				se = new StringEntity(jsonobj.toString());
-				se.setContentType("application/json;charset=UTF-8");
-				se.setContentEncoding(new BasicHeader(HTTP.CONTENT_TYPE,
-						"application/json;charset=UTF-8"));
-				httppostreq.setEntity(se);
-				*/
+				httppostreq.setEntity(new UrlEncodedFormEntity(pairs));
 				HttpResponse httpresponse = httpclient.execute(httppostreq);
 				HttpEntity resultentity = httpresponse.getEntity();
 				InputStream inputstream = resultentity.getContent();
 				String stuff = convertInputStream(inputstream);
 				System.out.println(stuff);
-				
+
 			} catch (UnsupportedEncodingException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			} catch (ClientProtocolException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 
