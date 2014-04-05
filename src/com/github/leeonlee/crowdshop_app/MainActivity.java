@@ -24,6 +24,7 @@ import org.json.JSONObject;
 import android.app.ActionBar;
 import android.app.ActionBar.Tab;
 import android.app.FragmentTransaction;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
@@ -96,6 +97,8 @@ public class MainActivity extends FragmentActivity implements
 		// Handle presses on the action bar items
 		switch (item.getItemId()) {
 		case R.id.action_add_task:
+			Intent i = new Intent(getApplicationContext(), TaskActivity.class);
+			startActivity(i);
 			return true;
 		}
 		return false;

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginBottom="50dp"
+    android:layout_marginLeft="10dp"
+    android:layout_marginRight="10dp" >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true" >
+
+        <TextView
+            android:id="@+id/startText"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:gravity="center"
+            android:paddingBottom="5dp"
+            android:paddingTop="5dp"
+            android:text="START A NEW TASK" />
+
+        <EditText
+            android:id="@+id/title"
+            android:layout_width="fill_parent"
+            android:background="@drawable/editbox"
+            android:textColor="#BF6D50"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/startText"
+            android:layout_centerHorizontal="true"
+            android:hint="WHAT DO YOU NEED?"
+            android:lines="2"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp" >
+
+            <requestFocus />
+        </EditText>
+
+        <EditText
+            android:id="@+id/desc"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/editbox"
+            android:layout_below="@id/title"
+            android:layout_centerHorizontal="true"
+            android:hint="ADDITIONAL COMMENTS"
+            android:lines="3"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp" />
+
+        <EditText
+            android:id="@+id/budget"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/desc"
+            android:layout_centerHorizontal="true"
+            android:hint="WHAT IS YOUR BUDGET?"
+            android:inputType="number"
+            android:background="@drawable/editbox"
+            android:lines="1"
+            android:layout_marginBottom="5dp"
+            android:layout_marginTop="5dp" />
+
+        <Button
+            android:id="@+id/submit"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/budget"
+            android:layout_centerHorizontal="true"
+            android:text="Submit" />
+    </RelativeLayout>
+
+</RelativeLayout>
