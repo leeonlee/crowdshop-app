@@ -2,14 +2,18 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginBottom="50dp"
-    android:layout_marginLeft="10dp"
-    android:layout_marginRight="10dp" >
+    android:background="#FFEAD2" >
 
     <RelativeLayout
+        android:id="@+id/submitBox"
+        style="@style/box"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true" >
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="30dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:background="#A39181" >
 
         <TextView
             android:id="@+id/startText"
@@ -17,37 +21,38 @@
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:gravity="center"
-            android:paddingBottom="5dp"
-            android:paddingTop="5dp"
-            android:text="START A NEW TASK" />
+            android:paddingBottom="15dp"
+            android:paddingTop="15dp"
+            android:text="START A NEW TASK"
+            android:textColor="#FFFFFF"
+            android:textSize="20dp" />
 
         <EditText
             android:id="@+id/title"
-            android:layout_width="fill_parent"
-            android:background="@drawable/editbox"
-            android:textColor="#BF6D50"
-            android:layout_height="wrap_content"
+            style="@style/box"
             android:layout_below="@id/startText"
             android:layout_centerHorizontal="true"
-            android:hint="WHAT DO YOU NEED?"
-            android:lines="2"
+            android:layout_marginBottom="5dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
             android:layout_marginTop="5dp"
-            android:layout_marginBottom="5dp" >
+            android:hint="WHAT DO YOU NEED?"
+            android:lines="2" >
 
             <requestFocus />
         </EditText>
 
         <EditText
             android:id="@+id/desc"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/editbox"
+            style="@style/box"
             android:layout_below="@id/title"
             android:layout_centerHorizontal="true"
-            android:hint="ADDITIONAL COMMENTS"
-            android:lines="3"
+            android:layout_marginBottom="5dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
             android:layout_marginTop="5dp"
-            android:layout_marginBottom="5dp" />
+            android:hint="ADDITIONAL COMMENTS"
+            android:lines="3" />
 
         <EditText
             android:id="@+id/budget"
@@ -55,20 +60,46 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/desc"
             android:layout_centerHorizontal="true"
+            android:layout_marginBottom="5dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="5dp"
+            android:background="@drawable/editbox"
             android:hint="WHAT IS YOUR BUDGET?"
             android:inputType="number"
-            android:background="@drawable/editbox"
             android:lines="1"
-            android:layout_marginBottom="5dp"
-            android:layout_marginTop="5dp" />
+            android:textColor="#B2ADA9" />
 
         <Button
             android:id="@+id/submit"
-            android:layout_width="fill_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/budget"
             android:layout_centerHorizontal="true"
-            android:text="Submit" />
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/submitbox"
+            android:paddingLeft="15dp"
+            android:paddingRight="15dp"
+            android:text="SUBMIT" />
     </RelativeLayout>
+
+    <Button
+        android:id="@+id/triangle"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_above="@id/submitBox"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/arrow_up"
+        android:gravity="center" />
+
+	<ImageView
+	    android:id="@+id/imageView1"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_alignBottom="@+id/triangle"
+	    android:layout_centerHorizontal="true"
+	    android:layout_marginBottom="22dp"
+	    android:src="@drawable/paper_icon" />
 
 </RelativeLayout>
