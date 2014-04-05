@@ -18,17 +18,20 @@ import org.apache.http.message.BasicNameValuePair;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class TaskActivity extends Activity {
 	Button submit;
 	EditText title, desc, budget, reward;
+	TextView startText;
 	ProgressDialog pd;
 	Activity mActivity;
 
@@ -38,12 +41,20 @@ public class TaskActivity extends Activity {
 		setContentView(R.layout.task_layout);
 
 		mActivity = this;
+		Typeface type = Typeface.createFromAsset(getAssets(), "fonts/Hey_Pretty_Girl.ttf");
 
 		submit = (Button) findViewById(R.id.submit);
+		submit.setTypeface(type);
 		title = (EditText) findViewById(R.id.title);
+		title.setTypeface(type);
 		desc = (EditText) findViewById(R.id.desc);
+		desc.setTypeface(type);;
 		reward = (EditText) findViewById(R.id.reward);
+		reward.setTypeface(type);
 		budget = (EditText) findViewById(R.id.budget);
+		budget.setTypeface(type);
+		startText = (TextView) findViewById(R.id.startText);
+		startText.setTypeface(type);
 
 		submit.setClickable(true);
 		submit.setOnClickListener(new OnClickListener() {

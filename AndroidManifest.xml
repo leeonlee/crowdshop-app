@@ -18,6 +18,7 @@
         android:theme="@style/AppTheme" >
         <activity
             android:name="com.github.leeonlee.crowdshop_app.TaskActivity"
+            android:theme="@android:style/Theme.NoTitleBar"
             android:label="task" >
         </activity>
         <activity
