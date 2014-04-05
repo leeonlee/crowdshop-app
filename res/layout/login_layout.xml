@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/city_bottom" >
+
+    <!-- android:background="#FFEAD2" -->
+
+    <RelativeLayout
+        android:id="@+id/loginbox"
+        style="@style/box"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_marginBottom="30dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:background="#A59484"
+        android:gravity="center"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/signIn"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:gravity="center"
+            android:hint="USERNAME"
+            android:text="SIGN IN"
+            android:textColor="#FFFFFF"
+            android:textSize="35sp" />
+
+        <EditText
+            android:id="@+id/username"
+            style="@style/box"
+            android:layout_below="@id/signIn"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="5dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="5dp"
+            android:hint="USERNAME" />
+
+        <EditText
+            android:id="@+id/password"
+            style="@style/box"
+            android:layout_below="@id/username"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="5dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="5dp"
+            android:hint="PASSWORD" />
+
+        <Button
+            android:id="@+id/loginButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/password"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/submitbox"
+            android:paddingLeft="15dp"
+            android:paddingRight="15dp"
+            android:text="LOGIN!"
+            android:textSize="20sp" />
+    </RelativeLayout>
+
+    <Button
+        android:id="@+id/triangle"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_above="@+id/loginbox"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/arrow_up" />
+
+    <ImageView
+        android:id="@+id/imageView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/triangle"
+        android:layout_alignLeft="@+id/triangle"
+        android:layout_marginBottom="28dp"
+        android:src="@drawable/cart" />
+
+    <ImageView
+        android:id="@+id/imageView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:src="@drawable/crowdshop_logo" />
+
+</RelativeLayout>

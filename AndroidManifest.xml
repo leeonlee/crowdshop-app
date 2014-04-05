@@ -18,17 +18,22 @@
         android:theme="@style/AppTheme" >
         <activity
             android:name="com.github.leeonlee.crowdshop_app.TaskActivity"
-            android:theme="@android:style/Theme.NoTitleBar"
-            android:label="task" >
+            android:label="task"
+            android:theme="@android:style/Theme.NoTitleBar" >
         </activity>
         <activity
-            android:name="com.github.leeonlee.crowdshop_app.MainActivity"
-            android:label="@string/app_name" >
+            android:name="com.github.leeonlee.crowdshop_app.NewMainActivity"
+            android:label="login"
+            android:theme="@android:style/Theme.NoTitleBar" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name="com.github.leeonlee.crowdshop_app.MainActivity"
+            android:label="@string/app_name" >
         </activity>
     </application>
 
