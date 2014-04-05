@@ -11,7 +11,7 @@ public class FriendFragment extends Fragment{
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
  
-        View rootView = inflater.inflate(R.layout.friends_fragment, container, false);
+        View rootView = inflater.inflate(R.layout.open_task, container, false);
          
         return rootView;
     }

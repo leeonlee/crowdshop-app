@@ -16,21 +16,36 @@ import org.json.JSONObject;
 import com.github.leeonlee.crowdshop_app.models.TaskInfo;
 import com.github.leeonlee.crowdshop_app.models.UserInfo;
 
-public final class CrowdShopApplication extends Application {
+public class CrowdShopApplication extends Application {
 
 	private static final String TAG = CrowdShopApplication.class.getSimpleName();
 
 	private Long mThisUserId;
-	private final List<Long> mOpenTaskIds = new ArrayList<Long>();
-	private final List<Long> mClaimedTaskIds = new ArrayList<Long>();
-	private final List<Long> mRequestedTaskIds = new ArrayList<Long>();
+	private TasksAdapter mOpenTaskIds;
+	private TasksAdapter mClaimedTaskIds;
+	private TasksAdapter mRequestedTaskIds;
 	private final Map<Long, UserInfo> mUsers = new HashMap<Long, UserInfo>();
 	private final Map<Long, TaskInfo> mTasks = new HashMap<Long, TaskInfo>();
 
 	@Override
 	public void onCreate() {
 		super.onCreate();
+		mOpenTaskIds = new TasksAdapter(this);
+		mClaimedTaskIds = new TasksAdapter(this);
+		mRequestedTaskIds = new TasksAdapter(this);
 		unloadUser();
+	}
+
+	public TasksAdapter getOpenTaskIds() {
+		return mOpenTaskIds;
+	}
+
+	public TasksAdapter getClaimedTaskIds() {
+		return mClaimedTaskIds;
+	}
+
+	public TasksAdapter getRequestedTaskIds() {
+		return mRequestedTaskIds;
 	}
 
 	public void loadUser(JSONObject jsonObject) throws JSONException {
@@ -105,15 +120,13 @@ public final class CrowdShopApplication extends Application {
 	}
 
 	public void claimTask(long taskId) {
-		if (!mOpenTaskIds.remove(taskId))
-			throw new IllegalArgumentException("Not an open task ID: " + taskId);
 		mTasks.put(taskId, new TaskInfo(mTasks.get(taskId), mThisUserId));
+		mOpenTaskIds.remove(taskId);
 		mClaimedTaskIds.add(taskId);
 	}
 
 	public void finishTask(long taskId) {
-		if (!mClaimedTaskIds.remove(taskId))
-			throw new IllegalArgumentException("Not my claimed task ID: " + taskId);
+		mClaimedTaskIds.remove(taskId);
 		mTasks.remove(taskId);
 	}
 
@@ -125,14 +138,11 @@ public final class CrowdShopApplication extends Application {
 	}
 
 	public void ackClaimTask(long taskId, long claimerUserId) {
-		if (!mRequestedTaskIds.contains(taskId))
-			throw new IllegalArgumentException("Not my requested task ID: " + taskId);
 		mTasks.put(taskId, new TaskInfo(mTasks.get(taskId), claimerUserId));
 	}
 
 	public void ackFinishTask(long taskId) {
-		if (!mRequestedTaskIds.remove(taskId))
-			throw new IllegalArgumentException("Not my requested task ID: " + taskId);
+		mRequestedTaskIds.remove(taskId);
 		mTasks.remove(taskId);
 	}
 
