@@ -43,7 +43,7 @@ public class MainActivity extends FragmentActivity implements
 	private ViewPager viewPager;
 	private TabsPagerAdapter mAdapter;
 	private ActionBar actionBar;
-	private String[] tabs = { "Friends", "Tasks" };
+	private static final int[] TAB_IDS = {R.string.friends, R.string.tasks, R.string.requests};
 	private CrowdShopApplication mApp;
 
 	@Override
@@ -62,10 +62,9 @@ public class MainActivity extends FragmentActivity implements
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
 		// Adding Tabs
-		for (String tab_name : tabs) {
-			actionBar.addTab(actionBar.newTab().setText(tab_name)
+		for (int tabId : TAB_IDS)
+			actionBar.addTab(actionBar.newTab().setText(tabId)
 					.setTabListener(this));
-		}
 
 		/**
 		 * on swiping the viewpager make respective tab selected

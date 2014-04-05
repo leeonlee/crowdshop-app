@@ -2,9 +2,9 @@
 <resources>
 
     <string name="app_name">CrowdShop</string>
-    <string name="title_section1">Friends</string>
-    <string name="title_section2">Tasks</string>
-    <string name="title_section3">Requests</string>
+    <string name="friends">Friends</string>
+    <string name="tasks">Tasks</string>
+    <string name="requests">Requests</string>
     <string name="action_settings">Settings</string>
 
 </resources>
