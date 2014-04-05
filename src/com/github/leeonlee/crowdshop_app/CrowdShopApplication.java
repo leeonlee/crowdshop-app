@@ -48,6 +48,14 @@ public class CrowdShopApplication extends Application {
 		return mRequestedTaskIds;
 	}
 
+	public UserInfo getUserInfo(long userId) {
+		return mUsers.get(userId);
+	}
+
+	public TaskInfo getTaskInfo(long taskId) {
+		return mTasks.get(taskId);
+	}
+
 	public void loadUser(JSONObject jsonObject) throws JSONException {
 		if (jsonObject == null)
 			throw new NullPointerException("jsonObject");

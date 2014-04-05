@@ -7,15 +7,22 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.TextView;
 
 public class TasksAdapter extends ArrayAdapter<Long> {
 
-	public TasksAdapter(Context context) {
-		super(context, R.layout.open_task);
+	private final CrowdShopApplication mApp;
+
+	public TasksAdapter(CrowdShopApplication app) {
+		super(app, R.layout.open_task);
+		mApp = app;
 	}
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
-		return super.getView(position, convertView, parent);
+		LayoutInflater inflater = (LayoutInflater)mApp.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		TextView view = (TextView)inflater.inflate(R.layout.open_task, null);
+		view.setText(mApp.getTaskInfo(getItem(position)).toString());
+		return view;
 	}
 }
