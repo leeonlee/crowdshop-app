@@ -1,0 +1,9 @@
+*.sw*
+.project
+.metadata
+bin
+gen
+local.properties
+.classpath
+.settings
+.loadpath
