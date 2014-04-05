@@ -54,27 +54,50 @@
             android:hint="ADDITIONAL COMMENTS"
             android:lines="3" />
 
-        <EditText
-            android:id="@+id/budget"
+        <LinearLayout
+            android:id="@+id/moneyBox"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/desc"
-            android:layout_centerHorizontal="true"
-            android:layout_marginBottom="5dp"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:layout_marginTop="5dp"
-            android:background="@drawable/editbox"
-            android:hint="WHAT IS YOUR BUDGET?"
-            android:inputType="number"
-            android:lines="1"
-            android:textColor="#B2ADA9" />
+            android:orientation="horizontal"
+            android:weightSum="1.0" >
+
+            <EditText
+                android:id="@+id/budget"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginTop="5dp"
+                android:layout_weight=".5"
+                android:background="@drawable/editbox"
+                android:hint="BUDGET"
+                android:inputType="number"
+                android:lines="1"
+                android:textColor="#B2ADA9" />
+
+            <EditText
+                android:id="@+id/reward"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginTop="5dp"
+                android:layout_weight=".5"
+                android:background="@drawable/editbox"
+                android:hint="REWARD"
+                android:inputType="number"
+                android:lines="1"
+                android:textColor="#B2ADA9" />
+        </LinearLayout>
 
         <Button
             android:id="@+id/submit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/budget"
+            android:layout_below="@id/moneyBox"
             android:layout_centerHorizontal="true"
             android:layout_marginBottom="10dp"
             android:layout_marginTop="10dp"
@@ -93,13 +116,13 @@
         android:background="@drawable/arrow_up"
         android:gravity="center" />
 
-	<ImageView
-	    android:id="@+id/imageView1"
-	    android:layout_width="wrap_content"
-	    android:layout_height="wrap_content"
-	    android:layout_alignBottom="@+id/triangle"
-	    android:layout_centerHorizontal="true"
-	    android:layout_marginBottom="22dp"
-	    android:src="@drawable/paper_icon" />
+    <ImageView
+        android:id="@+id/imageView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/triangle"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="22dp"
+        android:src="@drawable/paper_icon" />
 
 </RelativeLayout>
