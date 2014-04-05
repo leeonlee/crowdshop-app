@@ -3,9 +3,9 @@
     tools:context="com.github.leeonlee.crowdshop_app.MainActivity" >
 
     <item
-        android:id="@+id/action_settings"
-        android:orderInCategory="100"
-        android:showAsAction="never"
+        android:id="@+id/action_add_task"
+        android:showAsAction="ifRoom"
+        android:icon="@drawable/ic_action_new"
         android:title="@string/action_settings"/>
 
 </menu>
