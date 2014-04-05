@@ -1,8 +1,11 @@
 package com.github.leeonlee.crowdshop_app;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -19,6 +22,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -29,19 +33,24 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 
 public class MainActivity extends FragmentActivity implements
 		ActionBar.TabListener {
+
+	private static final String TAG = CrowdShopApplication.class.getSimpleName();
 
 	private ViewPager viewPager;
 	private TabsPagerAdapter mAdapter;
 	private ActionBar actionBar;
 	private String[] tabs = { "Friends", "Tasks" };
+	private CrowdShopApplication mApp;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		mApp = (CrowdShopApplication)getApplicationContext();
 
 		// Initilization
 		viewPager = (ViewPager) findViewById(R.id.pager);
@@ -98,117 +107,88 @@ public class MainActivity extends FragmentActivity implements
 
 	}
 
-	/*
-	 * Convert JSON string into string
-	 */
-	private static String convertInputStream(InputStream in) throws IOException {
-		int bytesRead;
-		byte[] contents = new byte[1024];
-		String string = null;
-		while ((bytesRead = in.read(contents)) != -1) {
-			string = new String(contents, 0, bytesRead);
-		}
-		return string;
-	}
-
-	private class GetFriendTasks extends AsyncTask<String, String, String> {
+	private class GetOpenTasks extends AsyncTask<String, Void, JSONArray> {
 
 		@Override
-		protected String doInBackground(String... params) {
+		protected JSONArray doInBackground(String... params) {
 			String urlString = "http://crowdshop-server.herokuapp.com/tasks";
 
-			String result = "";
-			InputStream in = null;
 			URL url = null;
 			HttpURLConnection urlConnection = null;
 
 			try {
 				url = new URL(urlString);
-
 				urlConnection = (HttpURLConnection) url.openConnection();
-
-				in = new BufferedInputStream(urlConnection.getInputStream());
-
-				result = convertInputStream(in);
-
+				BufferedReader reader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
+				StringBuffer buffer = new StringBuffer();
+				String line;
+				while ((line = reader.readLine()) != null)
+				{
+					buffer.append(line);
+					buffer.append('\n');
+				}	
+				return new JSONArray(buffer.toString());
 			} catch (MalformedURLException e) {
-				e.printStackTrace();
+				throw new RuntimeException(e);
 			} catch (IOException e) {
-				e.printStackTrace();
+				throw new RuntimeException(e);
+			} catch (JSONException e) {
+				throw new RuntimeException(e);
 			} finally {
 				urlConnection.disconnect();
 			}
-			System.out.println(result);
-			return result;
 		}
-	}
-
-	private class Login extends AsyncTask<String, Void, String> {
 
 		@Override
-		protected String doInBackground(String... params) {
-			String urlString = "http://crowdshop-server.herokuapp.com/loginview/";
-
-			String result = "";
-			InputStream in = null;
-			URL url = null;
-			HttpURLConnection urlConnection = null;
-
-			JSONObject jsonobj; // declared locally so that it destroys after
-								// serving its purpose
-			jsonobj = new JSONObject();
+		protected void onPostExecute(JSONArray result) {
 			try {
-				// adding some keys
-				jsonobj.put("username", params[0]);
-				jsonobj.put("password", params[1]);
-
-			} catch (JSONException ex) {
-				ex.printStackTrace();
+				mApp.loadOpenTasks(result);
+			} catch (JSONException e) {
+				Log.d(TAG, e.toString());
 			}
+		}
 
-			DefaultHttpClient httpclient = new DefaultHttpClient();
-			HttpPost httppostreq = new HttpPost(urlString);
-			StringEntity se;
+	}
+
+	private class Login extends AsyncTask<String, Void, JSONObject> {
+
+		@Override
+		protected JSONObject doInBackground(String... params) {
+			final String urlString = "http://crowdshop-server.herokuapp.com/loginview/";
+			DefaultHttpClient httpClient = new DefaultHttpClient();
+			HttpPost httpPostReq = new HttpPost(urlString);
 			try {
 				List<NameValuePair> pairs = new ArrayList<NameValuePair>();
 				pairs.add(new BasicNameValuePair("username", params[0]));
 				pairs.add(new BasicNameValuePair("password", params[1]));
-				httppostreq.setEntity(new UrlEncodedFormEntity(pairs)); 
-				/*
-				se = new StringEntity(jsonobj.toString());
-				se.setContentType("application/json;charset=UTF-8");
-				se.setContentEncoding(new BasicHeader(HTTP.CONTENT_TYPE,
-						"application/json;charset=UTF-8"));
-				httppostreq.setEntity(se);
-				*/
-				HttpResponse httpresponse = httpclient.execute(httppostreq);
-				HttpEntity resultentity = httpresponse.getEntity();
-				InputStream inputstream = resultentity.getContent();
-				String stuff = convertInputStream(inputstream);
-				System.out.println(stuff);
-				
-			} catch (UnsupportedEncodingException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			} catch (ClientProtocolException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+				httpPostReq.setEntity(new UrlEncodedFormEntity(pairs)); 
 
-			System.out.println(result);
-			System.out.println("wtf");
-			return result;
+				HttpResponse httpResponse = httpClient.execute(httpPostReq);
+				HttpEntity resultEntity = httpResponse.getEntity();
+				ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+				resultEntity.writeTo(outputStream);
+				return new JSONObject(outputStream.toString());
+			} catch (UnsupportedEncodingException e) {
+				throw new RuntimeException(e);
+			} catch (ClientProtocolException e) {
+				throw new RuntimeException(e);
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			} catch (JSONException e) {
+				throw new RuntimeException(e);
+			}
 		}
 
 		@Override
-		protected void onPostExecute(String result) {
+		protected void onPostExecute(JSONObject result) {
 			// Really, it would be cleaner to use an activity transition,
 			// but the log in activity doesn't exist yet
-			new GetFriendTasks().execute();
+			try {
+				mApp.loadUser(result);
+				new GetOpenTasks().execute();
+			} catch (JSONException e) {
+				Log.d(TAG, e.toString());
+			}
 		}
-
 	}
 }

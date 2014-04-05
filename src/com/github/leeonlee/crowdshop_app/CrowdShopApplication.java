@@ -1,34 +1,148 @@
 package com.github.leeonlee.crowdshop_app;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import android.app.Application;
 import android.util.Pair;
+import android.util.Log;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import com.github.leeonlee.crowdshop_app.models.TaskInfo;
-import com.github.leeonlee.crowdshop_app.models.ThisUser;
+import com.github.leeonlee.crowdshop_app.models.UserInfo;
 
 public final class CrowdShopApplication extends Application {
 
+	private static final String TAG = CrowdShopApplication.class.getSimpleName();
+
 	private Long mThisUserId;
-	private ThisUser mThisUser;
-	private Map<Long, TaskInfo> mTasks;
+	private final List<Long> mOpenTaskIds = new ArrayList<Long>();
+	private final List<Long> mClaimedTaskIds = new ArrayList<Long>();
+	private final List<Long> mRequestedTaskIds = new ArrayList<Long>();
+	private final Map<Long, UserInfo> mUsers = new HashMap<Long, UserInfo>();
+	private final Map<Long, TaskInfo> mTasks = new HashMap<Long, TaskInfo>();
 
 	@Override
 	public void onCreate() {
 		super.onCreate();
+		unloadUser();
+	}
+
+	public void loadUser(JSONObject jsonObject) throws JSONException {
+		if (jsonObject == null)
+			throw new NullPointerException("jsonObject");
+		
+		mThisUserId = 1l; // jsonObject.getLong("id");
+		mUsers.put(mThisUserId, new UserInfo(jsonObject));
+		Log.d(TAG, mUsers.toString());
+	}
+
+	public void loadOpenTasks(JSONArray jsonArray) throws JSONException {
+		if (jsonArray == null)
+			throw new NullPointerException("jsonArray");
+
+		final int length = jsonArray.length();
+		for (int i = 0; i < length; ++i) {
+			JSONObject jsonObject = jsonArray.getJSONObject(i);
+
+			long taskId = jsonObject.getLong("id");
+			mOpenTaskIds.add(taskId);
+
+			JSONObject creator = jsonObject.getJSONObject("owner");
+			long creatorUserId = creator.getLong("id");
+			mUsers.put(creatorUserId, new UserInfo(creator));
+
+			mTasks.put(taskId, new TaskInfo(creatorUserId, null, jsonObject));
+		}
+
+		Log.d(TAG, mOpenTaskIds.toString());
+		Log.d(TAG, mUsers.toString());
+		Log.d(TAG, mTasks.toString());
+	}
+
+	public void loadClaimedTasks(JSONArray jsonArray) throws JSONException {
+		if (jsonArray == null)
+			throw new NullPointerException("jsonArray");
+
+		final int length = jsonArray.length();
+		for (int i = 0; i < length; ++i) {
+			JSONObject jsonObject = jsonArray.getJSONObject(i);
+
+			long taskId = jsonObject.getLong("id");
+			mClaimedTaskIds.add(taskId);
+
+			JSONObject creator = jsonObject.getJSONObject("owner");
+			long creatorUserId = creator.getLong("id");
+			mUsers.put(creatorUserId, new UserInfo(creator));
+
+			mTasks.put(taskId, new TaskInfo(creatorUserId, mThisUserId, jsonObject));
+		}
+	}
+
+	public void loadRequestedTasks(JSONArray jsonArray) throws JSONException {
+		if (jsonArray == null)
+			throw new NullPointerException("jsonArray");
+
+		final int length = jsonArray.length();
+		for (int i = 0; i < length; ++i) {
+			JSONObject jsonObject = jsonArray.getJSONObject(i);
+
+			long taskId = jsonObject.getLong("id");
+			mRequestedTaskIds.add(taskId);
+
+			JSONObject claimed = jsonObject.optJSONObject("claimed_by");
+			Long claimerUserId = claimed == null? null : claimed.getLong("id");
+			if (claimed != null)
+				mUsers.put(claimerUserId, new UserInfo(claimed));
+
+			mTasks.put(taskId, new TaskInfo(mThisUserId, claimerUserId, jsonObject));
+		}
+	}
+
+	public void claimTask(long taskId) {
+		if (!mOpenTaskIds.remove(taskId))
+			throw new IllegalArgumentException("Not an open task ID: " + taskId);
+		mTasks.put(taskId, new TaskInfo(mTasks.get(taskId), mThisUserId));
+		mClaimedTaskIds.add(taskId);
+	}
+
+	public void finishTask(long taskId) {
+		if (!mClaimedTaskIds.remove(taskId))
+			throw new IllegalArgumentException("Not my claimed task ID: " + taskId);
+		mTasks.remove(taskId);
+	}
+
+	public void requestTask(long taskId, TaskInfo taskInfo) {
+		if (taskInfo == null)
+			throw new NullPointerException("taskInfo");
+		mTasks.put(taskId, taskInfo);
+		mRequestedTaskIds.add(taskId);
+	}
+
+	public void ackClaimTask(long taskId, long claimerUserId) {
+		if (!mRequestedTaskIds.contains(taskId))
+			throw new IllegalArgumentException("Not my requested task ID: " + taskId);
+		mTasks.put(taskId, new TaskInfo(mTasks.get(taskId), claimerUserId));
+	}
+
+	public void ackFinishTask(long taskId) {
+		if (!mRequestedTaskIds.remove(taskId))
+			throw new IllegalArgumentException("Not my requested task ID: " + taskId);
+		mTasks.remove(taskId);
+	}
+
+	public void unloadUser() {
 		mThisUserId = null;
-		mThisUser = null;
-		mTasks = new HashMap<Long, TaskInfo>();
+		mOpenTaskIds.clear();
+		mClaimedTaskIds.clear();
+		mRequestedTaskIds.clear();
+		mUsers.clear();
+		mTasks.clear();
 	}
 
-	public void loadUserId(long userId) {
-		mThisUserId = userId;
-		refresh();
-	}
-
-	public void refresh() {
-	}
-	
 }
