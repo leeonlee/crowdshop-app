@@ -24,6 +24,7 @@ import org.json.JSONObject;
 import android.app.ActionBar;
 import android.app.ActionBar.Tab;
 import android.app.FragmentTransaction;
+import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -32,6 +33,7 @@ import android.support.v4.view.ViewPager;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 public class MainActivity extends FragmentActivity implements
 		ActionBar.TabListener {
@@ -40,11 +42,25 @@ public class MainActivity extends FragmentActivity implements
 	private TabsPagerAdapter mAdapter;
 	private ActionBar actionBar;
 	private String[] tabs = { "Friends", "Tasks" };
+	String username, first_name, last_name, user_id;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		
+		Bundle extras = getIntent().getExtras();
+		if (extras != null){
+			username = extras.getString("username");
+			first_name = extras.getString("first_name");
+			last_name = extras.getString("last_name");
+			user_id = extras.getString("user_id");
+			
+			System.out.println(username);
+			System.out.println(first_name);
+			System.out.println(last_name);
+			System.out.println(user_id);
+		}
 
 		// Initilization
 		viewPager = (ViewPager) findViewById(R.id.pager);

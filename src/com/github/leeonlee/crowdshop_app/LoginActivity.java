@@ -121,12 +121,12 @@ public class LoginActivity extends Activity {
 
 		protected void onPostExecute(String result) {
 			JSONObject json = null;
+			Context context = getApplicationContext();
+			int duration = Toast.LENGTH_SHORT;
 			pd.cancel();
 			try {
 				json = new JSONObject(result);
 				if (json.getString("success").equals("invalid")) {
-					Context context = getApplicationContext();
-					int duration = Toast.LENGTH_SHORT;
 					Toast toast = Toast.makeText(context,
 							"Invalid credentials", duration);
 					toast.show();
@@ -137,8 +137,8 @@ public class LoginActivity extends Activity {
 					i.putExtra("first_name", json.getString("first_name"));
 					i.putExtra("last_name", json.getString("last_name"));
 					i.putExtra("user_id", json.getString("id"));
-					mActivity.finish();
 					startActivity(i);
+					mActivity.finish();
 				}
 
 			} catch (JSONException e) {
