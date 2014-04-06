@@ -14,6 +14,10 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import com.github.leeonlee.crowdshop_app.models.TaskInfo;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -21,6 +25,7 @@ import android.content.Context;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -105,7 +110,7 @@ public class TaskActivity extends Activity {
 		return string;
 	}
 
-	private class CreateTask extends AsyncTask<String, String, String> {
+	private class CreateTask extends AsyncTask<String, Void, JSONObject> {
 		public void onPreExecute() {
 			pd = new ProgressDialog(mActivity);
 			pd.setCancelable(true);
@@ -114,11 +119,9 @@ public class TaskActivity extends Activity {
 		}
 
 		@Override
-		protected String doInBackground(String... params) {
+		protected JSONObject doInBackground(String... params) {
 			String urlString = "http://crowdshop-server.herokuapp.com/createtask/";
-
-			String result = "";
-
+			JSONObject result = null;
 			DefaultHttpClient httpclient = new DefaultHttpClient();
 			HttpPost httppostreq = new HttpPost(urlString);
 			try {
@@ -133,29 +136,36 @@ public class TaskActivity extends Activity {
 				HttpEntity resultentity = httpresponse.getEntity();
 				InputStream inputstream = resultentity.getContent();
 				String stuff = convertInputStream(inputstream);
-				System.out.println(stuff);
-
+				result = new JSONObject(stuff);
 			} catch (UnsupportedEncodingException e1) {
-				e1.printStackTrace();
+				throw new RuntimeException(e1);
 			} catch (ClientProtocolException e) {
-				e.printStackTrace();
+				throw new RuntimeException(e);
 			} catch (IOException e) {
-				e.printStackTrace();
+				throw new RuntimeException(e);
+			} catch (JSONException e) {
+				throw new RuntimeException(e);
 			}
 
-			System.out.println(result);
-			System.out.println("wtf");
 			return result;
 		}
 
-		protected void onPostExecute(String result) {
+		protected void onPostExecute(JSONObject result) {
 			pd.cancel();
-			Context context = getApplicationContext();
-			int duration = Toast.LENGTH_SHORT;
-			Toast toast = Toast.makeText(context, "Submission complete!",
-					duration);
-			toast.show();
-			mActivity.finish();
+			CrowdShopApplication app = (CrowdShopApplication)getApplicationContext();
+			try
+			{
+				Log.d("", result.toString());
+				app.requestTask(result.getLong("id"),
+					TaskInfo.make(app.getThisUserId(), null, result));
+				int duration = Toast.LENGTH_SHORT;
+				Toast toast = Toast.makeText(app, "Submission complete!",
+						duration);
+				toast.show();
+				mActivity.finish();
+			} catch (JSONException e) {
+				throw new RuntimeException(e);
+			}
 		}
 
 	}
