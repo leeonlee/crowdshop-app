@@ -19,6 +19,7 @@ import com.github.leeonlee.crowdshop_app.models.UserInfo;
 public class CrowdShopApplication extends Application {
 
 	private static final String TAG = CrowdShopApplication.class.getSimpleName();
+	public static final String SERVER = "http://crowdshop-server.herokuapp.com";
 
 	private Long mThisUserId;
 	private TasksAdapter mOpenTaskIds;

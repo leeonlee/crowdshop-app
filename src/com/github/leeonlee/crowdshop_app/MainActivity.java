@@ -106,36 +106,38 @@ public class MainActivity extends FragmentActivity implements
 
 	}
 
+	private static JSONArray getTasks(String taskKind, String username) {
+		URL url = null;
+		HttpURLConnection urlConnection = null;
+
+		try {
+			url = new URL(CrowdShopApplication.SERVER + '/' + taskKind + "tasks/" + username);
+			urlConnection = (HttpURLConnection) url.openConnection();
+			BufferedReader reader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
+			StringBuffer buffer = new StringBuffer();
+			String line;
+			while ((line = reader.readLine()) != null)
+			{
+				buffer.append(line);
+				buffer.append('\n');
+			}	
+			return new JSONArray(buffer.toString());
+		} catch (MalformedURLException e) {
+			throw new RuntimeException(e);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		} catch (JSONException e) {
+			throw new RuntimeException(e);
+		} finally {
+			urlConnection.disconnect();
+		}
+	}
+
 	private class GetOpenTasks extends AsyncTask<String, Void, JSONArray> {
 
 		@Override
 		protected JSONArray doInBackground(String... params) {
-			String urlString = "http://crowdshop-server.herokuapp.com/tasks";
-
-			URL url = null;
-			HttpURLConnection urlConnection = null;
-
-			try {
-				url = new URL(urlString);
-				urlConnection = (HttpURLConnection) url.openConnection();
-				BufferedReader reader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
-				StringBuffer buffer = new StringBuffer();
-				String line;
-				while ((line = reader.readLine()) != null)
-				{
-					buffer.append(line);
-					buffer.append('\n');
-				}	
-				return new JSONArray(buffer.toString());
-			} catch (MalformedURLException e) {
-				throw new RuntimeException(e);
-			} catch (IOException e) {
-				throw new RuntimeException(e);
-			} catch (JSONException e) {
-				throw new RuntimeException(e);
-			} finally {
-				urlConnection.disconnect();
-			}
+			return getTasks("open", params[0]);
 		}
 
 		@Override
@@ -149,16 +151,55 @@ public class MainActivity extends FragmentActivity implements
 
 	}
 
+	private class GetRequestedTasks extends AsyncTask<String, Void, JSONArray> {
+
+		@Override
+		protected JSONArray doInBackground(String... params) {
+			return getTasks("requested", params[0]);
+		}
+
+		@Override
+		protected void onPostExecute(JSONArray result) {
+			try {
+				mApp.loadRequestedTasks(result);
+			} catch (JSONException e) {
+				Log.d(TAG, e.toString());
+			}
+		}
+
+	}
+
+	private class GetClaimedTasks extends AsyncTask<String, Void, JSONArray> {
+
+		@Override
+		protected JSONArray doInBackground(String... params) {
+			return getTasks("claimed", params[0]);
+		}
+
+		@Override
+		protected void onPostExecute(JSONArray result) {
+			try {
+				mApp.loadClaimedTasks(result);
+			} catch (JSONException e) {
+				Log.d(TAG, e.toString());
+			}
+		}
+
+	}
+
 	private class Login extends AsyncTask<String, Void, JSONObject> {
+
+		private String mUsername;
 
 		@Override
 		protected JSONObject doInBackground(String... params) {
-			final String urlString = "http://crowdshop-server.herokuapp.com/loginview/";
+			final String urlString = CrowdShopApplication.SERVER + "/loginview";
 			DefaultHttpClient httpClient = new DefaultHttpClient();
 			HttpPost httpPostReq = new HttpPost(urlString);
 			try {
 				List<NameValuePair> pairs = new ArrayList<NameValuePair>();
-				pairs.add(new BasicNameValuePair("username", params[0]));
+				mUsername = params[0];
+				pairs.add(new BasicNameValuePair("username", mUsername));
 				pairs.add(new BasicNameValuePair("password", params[1]));
 				httpPostReq.setEntity(new UrlEncodedFormEntity(pairs)); 
 
@@ -184,7 +225,9 @@ public class MainActivity extends FragmentActivity implements
 			// but the log in activity doesn't exist yet
 			try {
 				mApp.loadUser(result);
-				new GetOpenTasks().execute();
+				new GetOpenTasks().execute(mUsername);
+				new GetClaimedTasks().execute(mUsername);
+				new GetRequestedTasks().execute(mUsername);
 			} catch (JSONException e) {
 				Log.d(TAG, e.toString());
 			}
