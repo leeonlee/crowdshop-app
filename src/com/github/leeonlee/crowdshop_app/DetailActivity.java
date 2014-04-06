@@ -2,11 +2,23 @@ package com.github.leeonlee.crowdshop_app;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
 import org.json.JSONException;
 
@@ -74,24 +86,27 @@ public class DetailActivity extends Activity {
 
 		@Override
 		protected Boolean doInBackground(String... args) {
-			URL url = null;
-			HttpURLConnection urlConnection = null;
-
+			String urlString = CrowdShopApplication.SERVER + "/claimtask";
+			DefaultHttpClient httpclient = new DefaultHttpClient();
+			HttpPost httppostreq = new HttpPost(urlString);
 			try {
-				url = new URL(CrowdShopApplication.SERVER + "/claimtask");
-				urlConnection = (HttpURLConnection) url.openConnection();
-				urlConnection.setRequestMethod("POST");
-				BufferedWriter writer = new BufferedWriter(
-						new OutputStreamWriter(urlConnection.getOutputStream()));
-				writer.append("task_id=" + mTaskId + "&username=" + args[0]);
-				return urlConnection.getResponseCode() == 200;
-			} catch (MalformedURLException e) {
-				throw new RuntimeException(e);
+				List<NameValuePair> pairs = new ArrayList<NameValuePair>();
+				pairs.add(new BasicNameValuePair("username", args[0]));
+				pairs.add(new BasicNameValuePair("task_id", "" + mTaskId));
+				httppostreq.setEntity(new UrlEncodedFormEntity(pairs));
+				HttpResponse httpresponse = httpclient.execute(httppostreq);
+				HttpEntity resultentity = httpresponse.getEntity();
+				InputStream inputstream = resultentity.getContent();
+				String result = convertInputStream(inputstream);
+				return true;
+			} catch (UnsupportedEncodingException e1) {
+				e1.printStackTrace();
+			} catch (ClientProtocolException e) {
+				e.printStackTrace();
 			} catch (IOException e) {
-				throw new RuntimeException(e);
-			} finally {
-				urlConnection.disconnect();
+				e.printStackTrace();
 			}
+			return false;
 		}
 		
 		@Override
@@ -102,4 +117,13 @@ public class DetailActivity extends Activity {
 		
 	}
 	
+	private static String convertInputStream(InputStream in) throws IOException {
+		int bytesRead;
+		byte[] contents = new byte[1024];
+		String string = null;
+		while ((bytesRead = in.read(contents)) != -1) {
+			string = new String(contents, 0, bytesRead);
+		}
+		return string;
+	}
 }

@@ -14,7 +14,20 @@
         android:layout_centerHorizontal="true"
         android:src="@drawable/crowdshop_logo" />
 
-	 <EditText
+
+
+    <TextView
+        android:id="@+id/inputPrice"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/imageView2"
+        android:layout_marginTop="19dp"
+        android:text="INPUT ACTUAL PRICE:"        
+		android:textColor="#6d3c2a"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+    
+    <EditText
 	     android:id="@+id/inputPriceField"
 	     android:layout_width="fill_parent"
 	     android:layout_height="wrap_content"
@@ -27,17 +40,6 @@
 	     android:background="@drawable/submitbox"
 	     android:hint=""
 	     android:textSize="30sp" />
-
-    <TextView
-        android:id="@+id/inputPrice"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_below="@+id/imageView2"
-        android:layout_marginTop="19dp"
-        android:text="INPUT ACTUAL PRICE:"        
-		android:textColor="#6d3c2a"
-        android:textAppearance="?android:attr/textAppearanceLarge" />
 
     <Button
         android:id="@+id/loginButton"
