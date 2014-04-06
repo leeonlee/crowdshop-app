@@ -13,7 +13,7 @@ public class OpenTaskFragment extends ListFragment {
 		super.onListItemClick(l, v, position, id);
 		Activity a = getActivity();
 		a.startActivity(new Intent(a, DetailActivity.class)
-			.putExtra(CrowdShopApplication.TASK_ID, (long)l.getItemAtPosition(position))
+			.putExtra(CrowdShopApplication.TASK_ID, (Long)l.getItemAtPosition(position))
 		);
 	}
 }
