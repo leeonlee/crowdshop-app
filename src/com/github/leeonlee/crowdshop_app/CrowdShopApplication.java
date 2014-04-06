@@ -37,6 +37,10 @@ public class CrowdShopApplication extends Application {
 		mRequestedTaskIds = new TasksAdapter(this);
 		unloadUser();
 	}
+	
+	public Long getThisUserId() {
+		return mThisUserId;
+	}
 
 	public TasksAdapter getOpenTaskIds() {
 		return mOpenTaskIds;

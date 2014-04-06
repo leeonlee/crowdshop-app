@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/citybottomfaded" >
-    
+
     <ImageView
         android:id="@+id/imageView2"
         android:layout_width="wrap_content"
@@ -13,7 +13,7 @@
         android:src="@drawable/crowdshop_logo" />
 
     <Button
-        android:id="@+id/submit"
+        android:id="@+id/claimSubmit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
@@ -44,11 +44,11 @@
         android:text="Watermelon" />
 
     <TextView
-        android:id="@+id/textView3"
+        android:id="@+id/budgetTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
         android:layout_below="@+id/budgetLabel"
+        android:layout_centerHorizontal="true"
         android:text="$20" />
 
     <TextView
@@ -74,7 +74,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/title"
-        android:layout_below="@+id/textView3"
+        android:layout_below="@+id/budgetTextView"
         android:layout_marginTop="16dp"
         android:text="Reward"
         android:textAppearance="?android:attr/textAppearanceLarge" />
