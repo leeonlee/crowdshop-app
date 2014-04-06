@@ -60,7 +60,7 @@ public class CrowdShopApplication extends Application {
 		if (jsonObject == null)
 			throw new NullPointerException("jsonObject");
 		
-		mThisUserId = 1l; // jsonObject.getLong("id");
+		mThisUserId = jsonObject.getLong("id");
 		mUsers.put(mThisUserId, new UserInfo(jsonObject));
 		Log.d(TAG, mUsers.toString());
 	}
@@ -80,7 +80,7 @@ public class CrowdShopApplication extends Application {
 			long creatorUserId = creator.getLong("id");
 			mUsers.put(creatorUserId, new UserInfo(creator));
 
-			mTasks.put(taskId, new TaskInfo(creatorUserId, null, jsonObject));
+			mTasks.put(taskId, TaskInfo.make(creatorUserId, null, jsonObject));
 		}
 
 		Log.d(TAG, mOpenTaskIds.toString());
@@ -103,7 +103,7 @@ public class CrowdShopApplication extends Application {
 			long creatorUserId = creator.getLong("id");
 			mUsers.put(creatorUserId, new UserInfo(creator));
 
-			mTasks.put(taskId, new TaskInfo(creatorUserId, mThisUserId, jsonObject));
+			mTasks.put(taskId, TaskInfo.make(creatorUserId, mThisUserId, jsonObject));
 		}
 	}
 
@@ -123,17 +123,21 @@ public class CrowdShopApplication extends Application {
 			if (claimed != null)
 				mUsers.put(claimerUserId, new UserInfo(claimed));
 
-			mTasks.put(taskId, new TaskInfo(mThisUserId, claimerUserId, jsonObject));
+			mTasks.put(taskId, TaskInfo.make(mThisUserId, claimerUserId, jsonObject));
 		}
 	}
 
 	public void claimTask(long taskId) {
-		mTasks.put(taskId, new TaskInfo(mTasks.get(taskId), mThisUserId));
+		mTasks.put(taskId, mTasks.get(taskId).claimBy(mThisUserId));
 		mOpenTaskIds.remove(taskId);
 		mClaimedTaskIds.add(taskId);
 	}
 
-	public void finishTask(long taskId) {
+	public void finishTask(long taskId, int actualPrice) {
+		mTasks.put(taskId, mTasks.get(taskId).finishAt(actualPrice));
+	}
+
+	public void ackConfirmTask(long taskId) {
 		mClaimedTaskIds.remove(taskId);
 		mTasks.remove(taskId);
 	}
@@ -146,10 +150,10 @@ public class CrowdShopApplication extends Application {
 	}
 
 	public void ackClaimTask(long taskId, long claimerUserId) {
-		mTasks.put(taskId, new TaskInfo(mTasks.get(taskId), claimerUserId));
+		mTasks.put(taskId, mTasks.get(taskId).claimBy(claimerUserId));
 	}
 
-	public void ackFinishTask(long taskId) {
+	public void confirmTask(long taskId) {
 		mRequestedTaskIds.remove(taskId);
 		mTasks.remove(taskId);
 	}

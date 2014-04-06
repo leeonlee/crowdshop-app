@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 public class TasksAdapter extends ArrayAdapter<Long> {
 
+	private static final String TAG = TasksAdapter.class.getSimpleName();
 	private final CrowdShopApplication mApp;
 
 	public TasksAdapter(CrowdShopApplication app) {
@@ -22,7 +23,8 @@ public class TasksAdapter extends ArrayAdapter<Long> {
 	public View getView(int position, View convertView, ViewGroup parent) {
 		LayoutInflater inflater = (LayoutInflater)mApp.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		TextView view = (TextView)inflater.inflate(R.layout.open_task, null);
-		view.setText(mApp.getTaskInfo(getItem(position)).toString());
+		long taskId = getItem(position);
+		view.setText(mApp.getTaskInfo(taskId).toString());
 		return view;
 	}
 }
