@@ -7,7 +7,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import com.github.leeonlee.crowdshop_app.models.TaskInfo;
+import com.github.leeonlee.crowdshop_app.models.UserInfo;
 
 public class TasksAdapter extends ArrayAdapter<Long> {
 
@@ -15,16 +19,28 @@ public class TasksAdapter extends ArrayAdapter<Long> {
 	private final CrowdShopApplication mApp;
 
 	public TasksAdapter(CrowdShopApplication app) {
-		super(app, R.layout.open_task);
+		super(app, R.layout.task_list_item);
 		mApp = app;
 	}
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		LayoutInflater inflater = (LayoutInflater)mApp.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		TextView view = (TextView)inflater.inflate(R.layout.open_task, null);
+		RelativeLayout layout = (RelativeLayout)inflater.inflate(R.layout.task_list_item, null);
 		long taskId = getItem(position);
-		view.setText(mApp.getTaskInfo(taskId).toString());
-		return view;
+		TaskInfo taskInfo = mApp.getTaskInfo(taskId);
+		((TextView)layout.findViewById(R.id.task_list_item_title)).setText(taskInfo.name);
+		((TextView)layout.findViewById(R.id.task_list_item_date)).setText(taskInfo.timestamp);
+
+		long thisUserId = mApp.getThisUserId();
+		Long userId = taskInfo.creatorUserId == thisUserId?	taskInfo.claimerUserId : new Long(taskInfo.creatorUserId);
+		if (userId != null)
+		{
+			UserInfo userInfo = mApp.getUserInfo(userId);
+			((TextView)layout.findViewById(R.id.task_list_item_user)).setText(
+				userInfo.firstName + " " + userInfo.lastName
+			);
+		}
+		return layout;
 	}
 }
