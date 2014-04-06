@@ -51,15 +51,10 @@ public class MainActivity extends FragmentActivity implements
 		
 		Bundle extras = getIntent().getExtras();
 		if (extras != null){
-			username = extras.getString("username");
-			first_name = extras.getString("first_name");
-			last_name = extras.getString("last_name");
-			user_id = extras.getString("user_id");
-			
-			System.out.println(username);
-			System.out.println(first_name);
-			System.out.println(last_name);
-			System.out.println(user_id);
+			username = this.getIntent().getStringExtra("username");
+			first_name = this.getIntent().getStringExtra("first_name");
+			last_name = this.getIntent().getStringExtra("last_name");
+			user_id = this.getIntent().getStringExtra("user_id");
 		}
 
 		// Initilization
@@ -113,7 +108,9 @@ public class MainActivity extends FragmentActivity implements
 		switch (item.getItemId()) {
 		case R.id.action_add_task:
 			Intent i = new Intent(getApplicationContext(), TaskActivity.class);
+			i.putExtra("username", username);
 			startActivity(i);
+
 			return true;
 		}
 		return false;

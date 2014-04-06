@@ -34,6 +34,7 @@ public class TaskActivity extends Activity {
 	TextView startText;
 	ProgressDialog pd;
 	Activity mActivity;
+	String username;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -41,20 +42,24 @@ public class TaskActivity extends Activity {
 		setContentView(R.layout.task_layout);
 
 		mActivity = this;
-		Typeface type = Typeface.createFromAsset(getAssets(), "fonts/Hey_Pretty_Girl.ttf");
+		Typeface type = Typeface.createFromAsset(getAssets(),
+				"fonts/Hey_Pretty_Girl.ttf");
 
 		submit = (Button) findViewById(R.id.submit);
 		submit.setTypeface(type);
 		title = (EditText) findViewById(R.id.title);
 		title.setTypeface(type);
 		desc = (EditText) findViewById(R.id.desc);
-		desc.setTypeface(type);;
+		desc.setTypeface(type);
+		;
 		reward = (EditText) findViewById(R.id.reward);
 		reward.setTypeface(type);
 		budget = (EditText) findViewById(R.id.budget);
 		budget.setTypeface(type);
 		startText = (TextView) findViewById(R.id.startText);
 		startText.setTypeface(type);
+
+		username = this.getIntent().getStringExtra("username");
 
 		submit.setClickable(true);
 		submit.setOnClickListener(new OnClickListener() {
@@ -83,7 +88,7 @@ public class TaskActivity extends Activity {
 							"You cannot have a negative budget!", duration);
 					toast.show();
 				} else {
-					new CreateTask().execute("a", titleString, descString,
+					new CreateTask().execute(username, titleString, descString,
 							budgetString, rewardString);
 				}
 			}
@@ -147,8 +152,8 @@ public class TaskActivity extends Activity {
 			pd.cancel();
 			Context context = getApplicationContext();
 			int duration = Toast.LENGTH_SHORT;
-			Toast toast = Toast.makeText(context,
-					"Submission complete!", duration);
+			Toast toast = Toast.makeText(context, "Submission complete!",
+					duration);
 			toast.show();
 			mActivity.finish();
 		}
