@@ -27,7 +27,7 @@ public class TabsPagerAdapter extends FragmentPagerAdapter{
 			adapter = mApp.getClaimedTaskIds();
 			break;
 		case 2:
-			fragment = new ListFragment();
+			fragment = new RequestedTaskFragment();
 			adapter = mApp.getRequestedTaskIds();
 			break;
 		}

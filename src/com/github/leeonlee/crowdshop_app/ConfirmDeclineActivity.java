@@ -37,32 +37,29 @@ public class ConfirmDeclineActivity extends Activity {
 	TextView signIn;
 	Button login;
 	ProgressDialog pd;
-	Activity mActivity;
-	
-	TextView priceLabel, priceField, rewardLabel, rewardField, totalLabel, totalField;
+	private CrowdShopApplication mApp;
+	private long mTaskId;
+
+	TextView priceLabel, priceField, rewardLabel, rewardField, totalLabel,
+			totalField;
 	Button confirm, decline;
-	
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.confirmdecline_layout);
+		mApp = (CrowdShopApplication) getApplicationContext();
+		mTaskId = getIntent().getLongExtra(CrowdShopApplication.TASK_ID, 0);
 
-		mActivity = this;
-		username = (EditText) findViewById(R.id.username);
-		password = (EditText) findViewById(R.id.password);
-		signIn = (TextView) findViewById(R.id.signIn);
-		login = (Button) findViewById(R.id.loginButton);
+		priceLabel = (TextView) findViewById(R.id.finalPriceLabel);
+		priceField = (TextView) findViewById(R.id.finalPriceField);
+		rewardLabel = (TextView) findViewById(R.id.finalRewardLabel);
+		rewardField = (TextView) findViewById(R.id.finalRewardField);
+		totalLabel = (TextView) findViewById(R.id.finalTotalLabel);
+		totalField = (TextView) findViewById(R.id.finalTotalField);
+		confirm = (Button) findViewById(R.id.finalConfirm);
+		decline = (Button) findViewById(R.id.finalDecline);
 
-		priceLabel = (TextView) findViewById(R.id.priceLabel);
-		priceField = (TextView) findViewById(R.id.priceField);
-		rewardLabel = (TextView) findViewById(R.id.rewardLabel);
-		rewardField = (TextView) findViewById(R.id.rewardField);
-		totalLabel = (TextView) findViewById(R.id.totalLabel);
-		totalField = (TextView) findViewById(R.id.totalField);
-		confirm = (Button) findViewById(R.id.confirm);
-		decline = (Button) findViewById(R.id.decline);
-		
 		Typeface type = Typeface.createFromAsset(getAssets(),
 				"fonts/Hey_Pretty_Girl.ttf");
 		priceLabel.setTypeface(type);
@@ -79,127 +76,56 @@ public class ConfirmDeclineActivity extends Activity {
 
 			@Override
 			public void onClick(View arg0) {
-				String usernameString = username.getText().toString();
-				String passwordString = password.getText().toString();
-
-				Context context = getApplicationContext();
-				int duration = Toast.LENGTH_SHORT;
-				if (usernameString.equals("")) {
-					Toast toast = Toast.makeText(context, "Enter a username",
-							duration);
-					toast.show();
-				} else if (passwordString.equals("")) {
-					Toast toast = Toast.makeText(context, "Enter a password",
-							duration);
-					toast.show();
-				} else {
-					new Login().execute(usernameString, passwordString);
-				}
+				new Confirm().execute();
 			}
 		});
-		
+
 		decline.setClickable(true);
 		decline.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View arg0) {
-				String usernameString = username.getText().toString();
-				String passwordString = password.getText().toString();
-
-				Context context = getApplicationContext();
-				int duration = Toast.LENGTH_SHORT;
-				if (usernameString.equals("")) {
-					Toast toast = Toast.makeText(context, "Enter a username",
-							duration);
-					toast.show();
-				} else if (passwordString.equals("")) {
-					Toast toast = Toast.makeText(context, "Enter a password",
-							duration);
-					toast.show();
-				} else {
-					new Login().execute(usernameString, passwordString);
-				}
+				finish();
 			}
 		});
 	}
 
-	private class Login extends AsyncTask<String, String, String> {
+	private class Confirm extends AsyncTask<Void, Void, Boolean> {
 		public void onPreExecute() {
-			pd = new ProgressDialog(mActivity);
+			pd = new ProgressDialog(ConfirmDeclineActivity.this);
 			pd.setCancelable(true);
-			pd.setMessage("Authenticating..");
+			pd.setMessage("Submitting..");
 			pd.show();
 		}
 
 		@Override
-		protected String doInBackground(String... params) {
-			String urlString = "http://crowdshop-server.herokuapp.com/loginview/";
-
-			String result = "";
-
+		protected Boolean doInBackground(Void... params) {
 			DefaultHttpClient httpclient = new DefaultHttpClient();
-			HttpPost httppostreq = new HttpPost(urlString);
+			HttpPost httppostreq = new HttpPost(CrowdShopApplication.SERVER + "/confirmpurchase");
 			try {
 				List<NameValuePair> pairs = new ArrayList<NameValuePair>();
-				pairs.add(new BasicNameValuePair("username", params[0]));
-				pairs.add(new BasicNameValuePair("password", params[1]));
+				pairs.add(new BasicNameValuePair("task_id", "" + mTaskId));
 				httppostreq.setEntity(new UrlEncodedFormEntity(pairs));
 				HttpResponse httpresponse = httpclient.execute(httppostreq);
-				HttpEntity resultentity = httpresponse.getEntity();
-				InputStream inputstream = resultentity.getContent();
-				result = convertInputStream(inputstream);
-
+				return httpresponse.getStatusLine().getStatusCode() == 200;
 			} catch (UnsupportedEncodingException e1) {
-				e1.printStackTrace();
+				throw new RuntimeException(e1);
 			} catch (ClientProtocolException e) {
-				e.printStackTrace();
+				throw new RuntimeException(e);
 			} catch (IOException e) {
-				e.printStackTrace();
+				throw new RuntimeException(e);
 			}
-
-			return result;
 		}
 
-		protected void onPostExecute(String result) {
-			JSONObject json = null;
-			Context context = getApplicationContext();
-			int duration = Toast.LENGTH_SHORT;
+		protected void onPostExecute(Boolean result) {
 			pd.cancel();
-			try {
-				json = new JSONObject(result);
-				if (json.getString("success").equals("invalid")) {
-					Toast toast = Toast.makeText(context,
-							"Invalid credentials", duration);
-					toast.show();
-				} else if (json.getString("success").equals("success")) {
-					Intent i = new Intent(getApplicationContext(),
-							MainActivity.class);
-					((CrowdShopApplication)getApplicationContext()).loadUser(json);
-					i.putExtra("username", json.getString("username"));
-					i.putExtra("first_name", json.getString("first_name"));
-					i.putExtra("last_name", json.getString("last_name"));
-					i.putExtra("user_id", json.getString("id"));
-					startActivity(i);
-					mActivity.finish();
-				}
-
-			} catch (JSONException e) {
-				e.printStackTrace();
-			}
-
-			/*
-			 * mActivity.finish();
-			 */
+			mApp.confirmTask(mTaskId);
+			int duration = Toast.LENGTH_SHORT;
+			Toast toast = Toast
+					.makeText(mApp, "Submission complete!", duration);
+			toast.show();
+			finish();
 		}
 	}
 
-	private static String convertInputStream(InputStream in) throws IOException {
-		int bytesRead;
-		byte[] contents = new byte[1024];
-		String string = null;
-		while ((bytesRead = in.read(contents)) != -1) {
-			string = new String(contents, 0, bytesRead);
-		}
-		return string;
-	}
 }

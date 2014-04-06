@@ -46,6 +46,11 @@
             android:label="money"
             android:theme="@android:style/Theme.NoTitleBar" >
         </activity>
+		<activity
+            android:name="com.github.leeonlee.crowdshop_app.ConfirmDeclineActivity"
+            android:label="confirm-decline"
+            android:theme="@android:style/Theme.NoTitleBar" >
+        </activity>
 
     </application>
 

@@ -15,7 +15,7 @@
         android:src="@drawable/crowdshop_logo" />
 
     <TextView
-        android:id="@+id/totalField"
+        android:id="@+id/finalTotalField"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignBaseline="@+id/totalLabel"
@@ -25,7 +25,7 @@
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
     <TextView
-        android:id="@+id/priceLabel"
+        android:id="@+id/finalPriceLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignRight="@+id/totalField"
@@ -37,7 +37,7 @@
         android:textColor="#6d3c2a" />
 
     <TextView
-        android:id="@+id/priceField"
+        android:id="@+id/finalPriceField"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignBaseline="@+id/priceLabel"
@@ -48,7 +48,7 @@
         android:textColor="#6d3c2a" />
 
     <TextView
-        android:id="@+id/rewardLabel"
+        android:id="@+id/finalRewardLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignRight="@+id/priceLabel"
@@ -58,7 +58,7 @@
         android:textColor="#6d3c2a" />
 
     <TextView
-        android:id="@+id/totalLabel"
+        android:id="@+id/finalTotalLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/rewardLabel"
@@ -67,7 +67,7 @@
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
     <Button
-        android:id="@+id/confirm"
+        android:id="@+id/finalConfirm"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/rewardLabel"
@@ -84,7 +84,7 @@
         android:textSize="20sp" />
 
     <TextView
-        android:id="@+id/rewardField"
+        android:id="@+id/finalRewardField"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@+id/totalField"
@@ -94,7 +94,7 @@
         android:textColor="#6d3c2a" />
 
     <Button
-        android:id="@+id/decline"
+        android:id="@+id/finalDecline"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignBaseline="@+id/confirm"
