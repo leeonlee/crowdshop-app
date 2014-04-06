@@ -1,13 +1,8 @@
 package com.github.leeonlee.crowdshop_app;
 
-import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,8 +14,6 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
-import org.json.JSONArray;
-import org.json.JSONException;
 
 import android.app.Activity;
 import android.graphics.Typeface;
@@ -30,6 +23,8 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
+
+import com.github.leeonlee.crowdshop_app.models.TaskInfo;
 
 public class DetailActivity extends Activity {
 	private TextView titleLabel, title, budgetLabel, budgetTextView,
@@ -59,6 +54,7 @@ public class DetailActivity extends Activity {
 	}
 
 	public void initializeAssets() {
+		TaskInfo info = mApp.getTaskInfo(mTaskId);
 		Typeface type = Typeface.createFromAsset(getAssets(),
 				"fonts/Hey_Pretty_Girl.ttf");
 
@@ -68,18 +64,22 @@ public class DetailActivity extends Activity {
 		titleLabel.setTypeface(type);
 		title = (TextView) findViewById(R.id.title);
 		title.setTypeface(type);
+		title.setText(info.name);
 		budgetLabel = (TextView) findViewById(R.id.budgetLabel);
 		budgetLabel.setTypeface(type);
 		budgetTextView = (TextView) findViewById(R.id.budgetTextView);
 		budgetTextView.setTypeface(type);
+		budgetTextView.setText("$"+Integer.toString(info.threshold));
 		rewardLabel = (TextView) findViewById(R.id.rewardLabel);
 		rewardLabel.setTypeface(type);
 		additionalComments = (TextView) findViewById(R.id.additionalComments);
 		additionalComments.setTypeface(type);
+		additionalComments.setText(info.description);
 		additionalCommentsLabel = (TextView) findViewById(R.id.additionalCommentsLabel);
 		additionalCommentsLabel.setTypeface(type);
 		reward = (TextView) findViewById(R.id.reward);
 		reward.setTypeface(type);
+		reward.setText("$"+Integer.toString(info.reward));
 	}
 	
 	private class ClaimTask extends AsyncTask<String, Void, Boolean> {
