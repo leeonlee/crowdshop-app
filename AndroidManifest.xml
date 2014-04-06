@@ -22,7 +22,7 @@
             android:theme="@android:style/Theme.NoTitleBar" >
         </activity>
         <activity
-            android:name="com.github.leeonlee.crowdshop_app.NewMainActivity"
+            android:name="com.github.leeonlee.crowdshop_app.LoginActivity"
             android:label="login"
             android:theme="@android:style/Theme.NoTitleBar" >
             <intent-filter>

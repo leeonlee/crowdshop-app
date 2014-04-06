@@ -20,6 +20,7 @@ import org.json.JSONObject;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -30,7 +31,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class NewMainActivity extends Activity {
+public class LoginActivity extends Activity {
 	EditText username;
 	EditText password;
 	TextView signIn;
@@ -120,18 +121,30 @@ public class NewMainActivity extends Activity {
 
 		protected void onPostExecute(String result) {
 			JSONObject json = null;
+			pd.cancel();
 			try {
 				json = new JSONObject(result);
-				Context context = getApplicationContext();
-				int duration = Toast.LENGTH_SHORT;
-				Toast toast = Toast.makeText(context, json.getString("success"), duration);
-				toast.show();
+				if (json.getString("success").equals("invalid")) {
+					Context context = getApplicationContext();
+					int duration = Toast.LENGTH_SHORT;
+					Toast toast = Toast.makeText(context,
+							"Invalid credentials", duration);
+					toast.show();
+				} else if (json.getString("success").equals("success")) {
+					Intent i = new Intent(getApplicationContext(),
+							MainActivity.class);
+					i.putExtra("username", json.getString("username"));
+					i.putExtra("first_name", json.getString("first_name"));
+					i.putExtra("last_name", json.getString("last_name"));
+					i.putExtra("user_id", json.getString("id"));
+					mActivity.finish();
+					startActivity(i);
+				}
 
 			} catch (JSONException e) {
 				e.printStackTrace();
 			}
 
-			pd.cancel();
 			/*
 			 * mActivity.finish();
 			 */
