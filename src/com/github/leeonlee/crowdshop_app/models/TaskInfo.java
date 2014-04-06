@@ -45,7 +45,7 @@ public final class TaskInfo {
 		if (threshold < 0)
 			throw new IllegalArgumentException("threshold cannot be negative");
 
-		int actualPrice = jsonObject.getInt("actual_price");
+		int actualPrice = jsonObject.optInt("actual_price", 0);
 		if (actualPrice < 0)
 			throw new IllegalArgumentException("actualPrice cannot be negative");
 		if (actualPrice > threshold)
