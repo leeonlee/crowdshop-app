@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/city_bottom" >
+
+    <!-- android:background="#FFEAD2" -->
+
+    <ImageView
+        android:id="@+id/imageView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:src="@drawable/crowdshop_logo" />
+
+    <TextView
+        android:id="@+id/totalField"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/totalLabel"
+        android:layout_alignBottom="@+id/totalLabel"
+        android:layout_toRightOf="@+id/totalLabel"
+        android:text="$11"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <TextView
+        android:id="@+id/priceLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignRight="@+id/totalField"
+        android:layout_below="@+id/imageView2"
+        android:layout_marginRight="14dp"
+        android:layout_marginTop="16dp"
+        android:text="PRICE FOR TASK = "
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textColor="#6d3c2a" />
+
+    <TextView
+        android:id="@+id/priceField"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/priceLabel"
+        android:layout_alignBottom="@+id/priceLabel"
+        android:layout_alignLeft="@+id/rewardField"
+        android:text="$10"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textColor="#6d3c2a" />
+
+    <TextView
+        android:id="@+id/rewardLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignRight="@+id/priceLabel"
+        android:layout_below="@+id/priceLabel"
+        android:text="REWARD PRICE = "
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textColor="#6d3c2a" />
+
+    <TextView
+        android:id="@+id/totalLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/rewardLabel"
+        android:layout_centerHorizontal="true"
+        android:text="TOTAL = "
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <Button
+        android:id="@+id/confirm"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/rewardLabel"
+        android:layout_below="@+id/totalLabel"
+        android:layout_marginLeft="14dp"
+        android:layout_marginTop="24dp"
+        android:background="#291c16"
+        android:minHeight="36dp"
+        android:minWidth="30dp"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp"
+        android:text="CONFIRM"
+        android:textColor="#ffead2"
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/rewardField"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/totalField"
+        android:layout_toRightOf="@+id/rewardLabel"
+        android:text="$1"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textColor="#6d3c2a" />
+
+    <Button
+        android:id="@+id/decline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/confirm"
+        android:layout_alignBottom="@+id/confirm"
+        android:layout_alignRight="@+id/priceField"
+        android:background="#291c16"
+        android:minHeight="36dp"
+        android:minWidth="30dp"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp"
+        android:text="DECLINE"
+        android:textColor="#ffead2"
+        android:textSize="20sp" />
+
+</RelativeLayout>

@@ -18,7 +18,7 @@
 	     android:id="@+id/inputPriceField"
 	     android:layout_width="fill_parent"
 	     android:layout_height="wrap_content"
-	     android:layout_below="@id/inputPrice"
+	     android:layout_below="@+id/inputPrice"
 	     android:layout_centerHorizontal="true"
 	     android:layout_marginBottom="5dp"
 	     android:layout_marginLeft="10dp"
