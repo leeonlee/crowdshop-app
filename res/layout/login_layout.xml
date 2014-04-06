@@ -28,7 +28,7 @@
             android:hint="USERNAME"
             android:text="SIGN IN"
             android:textColor="#FFFFFF"
-            android:textSize="35sp" />
+            android:textSize="40sp" />
 
         <EditText
             android:id="@+id/username"
@@ -36,6 +36,7 @@
             android:layout_below="@id/signIn"
             android:layout_centerHorizontal="true"
             android:layout_marginBottom="5dp"
+            android:textSize="25sp"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
             android:layout_marginTop="5dp"
@@ -50,6 +51,8 @@
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
             android:layout_marginTop="5dp"
+            android:inputType="textPassword"
+            android:textSize="25sp"
             android:hint="PASSWORD" />
 
         <Button
@@ -64,7 +67,7 @@
             android:paddingLeft="15dp"
             android:paddingRight="15dp"
             android:text="LOGIN!"
-            android:textSize="20sp" />
+            android:textSize="25sp" />
     </RelativeLayout>
 
     <Button
