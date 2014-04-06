@@ -6,27 +6,24 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
-import android.widget.TextView;
 
-public class DetailActivity extends Activity {
-	private TextView stuff;
-	private Button claim;
+public class MoneyActivity extends Activity {
+	Button submitButton;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.detail_layout);
-
-		// populates textviews and stuff with stuff from the application class
+		setContentView(R.layout.money_layout);
 
 		Typeface type = Typeface.createFromAsset(getAssets(),
 				"fonts/Hey_Pretty_Girl.ttf");
 		// login.setTypeface(type);
 
-		claim.setOnClickListener(new OnClickListener() {
+		submitButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
-				// call some api that marks it as claimed
+				// call some api that marks the price
+				// remember to check for empty values
 			}
 		});
 	}
