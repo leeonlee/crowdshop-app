@@ -13,13 +13,13 @@ public class MoneyActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		//setContentView(R.layout.money_layout);
-		setContentView(R.layout.login_layout);
+		setContentView(R.layout.money_layout);
 
 		Typeface type = Typeface.createFromAsset(getAssets(),
 				"fonts/Hey_Pretty_Girl.ttf");
 		// login.setTypeface(type);
 
+		submitButton = (Button)findViewById(R.id.moneyButton);
 		submitButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View arg0) {

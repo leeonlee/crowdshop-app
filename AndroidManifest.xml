@@ -41,6 +41,12 @@
             android:label="detail"
             android:theme="@android:style/Theme.NoTitleBar" >
         </activity>
+		<activity
+            android:name="com.github.leeonlee.crowdshop_app.MoneyActivity"
+            android:label="money"
+            android:theme="@android:style/Theme.NoTitleBar" >
+        </activity>
+
     </application>
 
 </manifest>
