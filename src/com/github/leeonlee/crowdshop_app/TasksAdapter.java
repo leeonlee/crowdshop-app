@@ -1,8 +1,11 @@
 package com.github.leeonlee.crowdshop_app;
 
+import java.util.Date;
 import java.util.List;
 
 import android.content.Context;
+import android.text.format.DateFormat;
+import android.text.format.Time;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,7 +33,10 @@ public class TasksAdapter extends ArrayAdapter<Long> {
 		long taskId = getItem(position);
 		TaskInfo taskInfo = mApp.getTaskInfo(taskId);
 		((TextView)layout.findViewById(R.id.task_list_item_title)).setText(taskInfo.name);
-		((TextView)layout.findViewById(R.id.task_list_item_date)).setText(taskInfo.timestamp);
+		Time time = new Time();
+		time.parse3339(taskInfo.timestamp);	
+		Date date = new Date(time.toMillis(false));
+		((TextView)layout.findViewById(R.id.task_list_item_date)).setText(DateFormat.getLongDateFormat(mApp).format(date));
 
 		long thisUserId = mApp.getThisUserId();
 		Long userId = taskInfo.creatorUserId == thisUserId?	taskInfo.claimerUserId : new Long(taskInfo.creatorUserId);
