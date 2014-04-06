@@ -67,6 +67,7 @@
             android:paddingLeft="15dp"
             android:paddingRight="15dp"
             android:text="LOGIN!"
+            android:textColor="#6d3c2a"
             android:textSize="25sp" />
     </RelativeLayout>
 
