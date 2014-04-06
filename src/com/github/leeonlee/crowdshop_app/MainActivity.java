@@ -19,7 +19,6 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
@@ -29,11 +28,17 @@ import org.json.JSONObject;
 import android.app.ActionBar;
 import android.app.ActionBar.Tab;
 import android.app.FragmentTransaction;
+import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.widget.Toast;
 
 public class MainActivity extends FragmentActivity implements
 		ActionBar.TabListener {
@@ -45,12 +50,21 @@ public class MainActivity extends FragmentActivity implements
 	private ActionBar actionBar;
 	private static final int[] TAB_IDS = {R.string.friends, R.string.tasks, R.string.requests};
 	private CrowdShopApplication mApp;
+	private String username, first_name, last_name, user_id;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		mApp = (CrowdShopApplication)getApplicationContext();
+		
+		Bundle extras = getIntent().getExtras();
+		if (extras != null){
+			username = this.getIntent().getStringExtra("username");
+			first_name = this.getIntent().getStringExtra("first_name");
+			last_name = this.getIntent().getStringExtra("last_name");
+			user_id = this.getIntent().getStringExtra("user_id");
+		}
 
 		// Initilization
 		viewPager = (ViewPager) findViewById(R.id.pager);
@@ -86,7 +100,32 @@ public class MainActivity extends FragmentActivity implements
 			public void onPageScrollStateChanged(int arg0) {
 			}
 		});
-		new Login().execute("a", "a");
+
+		new GetOpenTasks().execute(username);
+		new GetClaimedTasks().execute(username);
+		new GetRequestedTasks().execute(username);
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// Inflate the menu items for use in the action bar
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.main, menu);
+		return super.onCreateOptionsMenu(menu);
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		// Handle presses on the action bar items
+		switch (item.getItemId()) {
+		case R.id.action_add_task:
+			Intent i = new Intent(getApplicationContext(), TaskActivity.class);
+			i.putExtra("username", username);
+			startActivity(i);
+
+			return true;
+		}
+		return false;
 	}
 
 	@Override
@@ -160,6 +199,7 @@ public class MainActivity extends FragmentActivity implements
 
 		@Override
 		protected void onPostExecute(JSONArray result) {
+			Log.d(TAG, result.toString());
 			try {
 				mApp.loadRequestedTasks(result);
 			} catch (JSONException e) {
@@ -180,54 +220,6 @@ public class MainActivity extends FragmentActivity implements
 		protected void onPostExecute(JSONArray result) {
 			try {
 				mApp.loadClaimedTasks(result);
-			} catch (JSONException e) {
-				Log.d(TAG, e.toString());
-			}
-		}
-
-	}
-
-	private class Login extends AsyncTask<String, Void, JSONObject> {
-
-		private String mUsername;
-
-		@Override
-		protected JSONObject doInBackground(String... params) {
-			final String urlString = CrowdShopApplication.SERVER + "/loginview";
-			DefaultHttpClient httpClient = new DefaultHttpClient();
-			HttpPost httpPostReq = new HttpPost(urlString);
-			try {
-				List<NameValuePair> pairs = new ArrayList<NameValuePair>();
-				mUsername = params[0];
-				pairs.add(new BasicNameValuePair("username", mUsername));
-				pairs.add(new BasicNameValuePair("password", params[1]));
-				httpPostReq.setEntity(new UrlEncodedFormEntity(pairs)); 
-
-				HttpResponse httpResponse = httpClient.execute(httpPostReq);
-				HttpEntity resultEntity = httpResponse.getEntity();
-				ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-				resultEntity.writeTo(outputStream);
-				return new JSONObject(outputStream.toString());
-			} catch (UnsupportedEncodingException e) {
-				throw new RuntimeException(e);
-			} catch (ClientProtocolException e) {
-				throw new RuntimeException(e);
-			} catch (IOException e) {
-				throw new RuntimeException(e);
-			} catch (JSONException e) {
-				throw new RuntimeException(e);
-			}
-		}
-
-		@Override
-		protected void onPostExecute(JSONObject result) {
-			// Really, it would be cleaner to use an activity transition,
-			// but the log in activity doesn't exist yet
-			try {
-				mApp.loadUser(result);
-				new GetOpenTasks().execute(mUsername);
-				new GetClaimedTasks().execute(mUsername);
-				new GetRequestedTasks().execute(mUsername);
 			} catch (JSONException e) {
 				Log.d(TAG, e.toString());
 			}
