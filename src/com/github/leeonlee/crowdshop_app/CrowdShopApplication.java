@@ -20,6 +20,7 @@ public class CrowdShopApplication extends Application {
 
 	private static final String TAG = CrowdShopApplication.class.getSimpleName();
 	public static final String SERVER = "http://crowdshop-server.herokuapp.com";
+	public static final String TASK_ID = "com.github.leeonlee.crowdshop_app.TASK_ID";
 
 	private Long mThisUserId;
 	private TasksAdapter mOpenTaskIds;

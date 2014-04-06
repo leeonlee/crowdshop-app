@@ -15,19 +15,22 @@ public class TabsPagerAdapter extends FragmentPagerAdapter{
 	}
 	
 	public Fragment getItem(int index){
+		ListFragment fragment = null;
 		TasksAdapter adapter = null;
 		switch(index){
 		case 0:
+			fragment = new OpenTaskFragment();
 			adapter = mApp.getOpenTaskIds();
 			break;
 		case 1:
+			fragment = new ListFragment();
 			adapter = mApp.getClaimedTaskIds();
 			break;
 		case 2:
+			fragment = new ListFragment();
 			adapter = mApp.getRequestedTaskIds();
 			break;
 		}
-		ListFragment fragment = new ListFragment();
 		fragment.setListAdapter(adapter);
 		return fragment;
 	}

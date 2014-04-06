@@ -13,7 +13,8 @@ public class MoneyActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.money_layout);
+		//setContentView(R.layout.money_layout);
+		setContentView(R.layout.login_layout);
 
 		Typeface type = Typeface.createFromAsset(getAssets(),
 				"fonts/Hey_Pretty_Girl.ttf");
