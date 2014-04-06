@@ -1,8 +1,12 @@
 package com.github.leeonlee.crowdshop_app;
 
+import java.util.Date;
+
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.text.format.DateFormat;
+import android.text.format.Time;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,12 +43,15 @@ public class TasksAdapter extends ArrayAdapter<Long> {
 				"fonts/Hey_Pretty_Girl.ttf"));
 		title.setTextColor(Color.BLACK);
 
-		TextView date = (TextView) layout
+		TextView dateView = (TextView) layout
 				.findViewById(R.id.task_list_item_date);
-		date.setText(taskInfo.timestamp);
-		date.setTypeface(Typeface.createFromAsset(getContext().getAssets(),
+		dateView.setTypeface(Typeface.createFromAsset(getContext().getAssets(),
 				"fonts/Hey_Pretty_Girl.ttf"));
-		date.setTextColor(Color.BLACK);
+		dateView.setTextColor(Color.BLACK);
+		Time time = new Time();
+		time.parse3339(taskInfo.timestamp);	
+		Date date = new Date(time.toMillis(false));
+		dateView.setText(DateFormat.getLongDateFormat(mApp).format(date));
 
 		long thisUserId = mApp.getThisUserId();
 		Long userId = taskInfo.creatorUserId == thisUserId ? taskInfo.claimerUserId
