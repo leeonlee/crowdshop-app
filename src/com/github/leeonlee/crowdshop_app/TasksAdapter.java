@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.text.format.DateFormat;
 import android.text.format.Time;
+import android.util.Log;
 import android.util.TimeFormatException;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -50,12 +51,7 @@ public class TasksAdapter extends ArrayAdapter<Long> {
 				"fonts/Hey_Pretty_Girl.ttf"));
 		dateView.setTextColor(Color.BLACK);
 		Time time = new Time();
-		try
-		{
-			time.parse3339(taskInfo.timestamp);
-		} catch (TimeFormatException e){
-			
-		}
+		time.parse3339(taskInfo.timestamp);
 		Date date = new Date(time.toMillis(false));
 		dateView.setText(DateFormat.getLongDateFormat(mApp).format(date));
 
