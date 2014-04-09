@@ -57,7 +57,7 @@ public class TasksAdapter extends ArrayAdapter<Long> {
 
 		long thisUserId = mApp.getThisUserId();
 		Long userId = taskInfo.creatorUserId == thisUserId ? taskInfo.claimerUserId
-				: new Long(taskInfo.creatorUserId);
+				: Long.valueOf(taskInfo.creatorUserId);
 		if (userId != null) {
 			UserInfo userInfo = mApp.getUserInfo(userId);
 			TextView user = (TextView) layout
