@@ -43,10 +43,10 @@ public class MainActivity extends FragmentActivity implements
 		
 		Bundle extras = getIntent().getExtras();
 		if (extras != null){
-			username = this.getIntent().getStringExtra("username");
-			first_name = this.getIntent().getStringExtra("first_name");
-			last_name = this.getIntent().getStringExtra("last_name");
-			user_id = this.getIntent().getStringExtra("user_id");
+			username = extras.getString("username");
+			first_name = extras.getString("first_name");
+			last_name = extras.getString("last_name");
+			user_id = extras.getString("user_id");
 		}
 
 		// Initilization
