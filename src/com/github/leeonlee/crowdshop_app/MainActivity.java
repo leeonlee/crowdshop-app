@@ -7,6 +7,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import android.support.v4.app.*;
 import org.json.JSONArray;
 import org.json.JSONException;
 
@@ -16,7 +17,6 @@ import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.Menu;
@@ -34,6 +34,7 @@ public class MainActivity extends FragmentActivity implements
 	private static final int[] TAB_IDS = {R.string.friends, R.string.tasks, R.string.requests};
 	private CrowdShopApplication mApp;
 	private String username, first_name, last_name, user_id;
+	private TasksAdapter mOpenTaskIds, mClaimedTaskIds, mRequestedTaskIds;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -52,7 +53,7 @@ public class MainActivity extends FragmentActivity implements
 		// Initilization
 		viewPager = (ViewPager) findViewById(R.id.pager);
 		actionBar = getActionBar();
-		mAdapter = new TabsPagerAdapter(getSupportFragmentManager(), mApp);
+		mAdapter = new TabsPagerAdapter(getSupportFragmentManager());
 
 		viewPager.setAdapter(mAdapter);
 		actionBar.setHomeButtonEnabled(false);
@@ -206,6 +207,41 @@ public class MainActivity extends FragmentActivity implements
 			} catch (JSONException e) {
 				Log.d(TAG, e.toString());
 			}
+		}
+	}
+
+	public class TabsPagerAdapter extends FragmentPagerAdapter {
+
+		public TabsPagerAdapter(FragmentManager fm) {
+			super(fm);
+		}
+
+		public Fragment getItem(int index){
+			ListFragment fragment = null;
+			TasksAdapter adapter = null;
+			switch(index){
+			case 0:
+				fragment = new OpenTaskFragment();
+				adapter = mApp.getOpenTaskIds();
+				break;
+			case 1:
+				fragment = new ClaimedTaskFragment();
+				adapter = mApp.getClaimedTaskIds();
+				break;
+			case 2:
+				fragment = new RequestedTaskFragment();
+				adapter = mApp.getRequestedTaskIds();
+				break;
+			default:
+				throw new IndexOutOfBoundsException("size is " + getCount() +  ", index is " + index);
+			}
+			fragment.setListAdapter(adapter);
+			return fragment;
+		}
+
+		@Override
+		public int getCount() {
+			return 3;
 		}
 	}
 }
