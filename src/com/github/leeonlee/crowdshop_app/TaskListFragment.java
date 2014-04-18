@@ -37,19 +37,18 @@ public abstract class TaskListFragment extends ListFragment {
 	}
 
 	@Override
-	public void onActivityCreated(Bundle savedInstanceState) {
-		super.onActivityCreated(savedInstanceState);
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
 		mAdapter = new TaskListAdapter(getActivity());
-		setListAdapter(mAdapter);
 		long[] taskIds;
 		if (savedInstanceState != null && (taskIds = savedInstanceState.getLongArray(TASK_IDS)) != null) {
 			mAdapter.addTaskIdsAndNotify(taskIds);
-			setListShown(true);
+			setListAdapter(mAdapter);
 		}
 		else {
-			setListShown(false);
 			new GetTasks().execute(((MainActivity)getActivity()).getUsername());
 		}
+		Log.d(TAG, "Called onCreate");
 	}
 
 	@Override
@@ -110,7 +109,7 @@ public abstract class TaskListFragment extends ListFragment {
 				Toast.makeText(getActivity(), "Server error", Toast.LENGTH_SHORT).show();
 			else {
 				mAdapter.addTaskIdsAndNotify(taskIds);
-				setListShown(true);
+				setListAdapter(mAdapter);
 			}
 		}
 
