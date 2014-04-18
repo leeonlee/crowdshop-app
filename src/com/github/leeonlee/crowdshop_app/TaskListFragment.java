@@ -65,11 +65,8 @@ public abstract class TaskListFragment extends ListFragment {
 		Activity a = getActivity();
 		Intent i = new Intent(a, mActivityClass)
 			.putExtra(CrowdShopApplication.TASK_ID, (Long)l.getItemAtPosition(position));
-		putOtherParameters(i);
 		a.startActivity(i);
 	}
-
-	protected abstract void putOtherParameters(Intent activityParameters);
 
 	private class GetTasks extends AsyncTask<String, Void, long[]> {
 

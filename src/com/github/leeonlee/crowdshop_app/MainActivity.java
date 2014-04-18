@@ -83,12 +83,6 @@ public class MainActivity extends FragmentActivity implements
 			public void onPageScrollStateChanged(int arg0) {
 			}
 		});
-
-		/*
-		new GetOpenTasks().execute(username);
-		new GetClaimedTasks().execute(username);
-		new GetRequestedTasks().execute(username);
-		*/
 	}
 
 	@Override
@@ -115,8 +109,6 @@ public class MainActivity extends FragmentActivity implements
 
 	@Override
 	public void onTabReselected(Tab arg0, FragmentTransaction arg1) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
@@ -126,93 +118,10 @@ public class MainActivity extends FragmentActivity implements
 
 	@Override
 	public void onTabUnselected(Tab tab, FragmentTransaction ft) {
-		// TODO Auto-generated method stub
-
 	}
 
 	public String getUsername() {
 		return username;
-	}
-
-	private static JSONArray getTasks(String taskKind, String username) {
-		URL url = null;
-		HttpURLConnection urlConnection = null;
-
-		try {
-			url = new URL(CrowdShopApplication.SERVER + '/' + taskKind + "tasks/" + username);
-			urlConnection = (HttpURLConnection) url.openConnection();
-			BufferedReader reader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
-			StringBuffer buffer = new StringBuffer();
-			String line;
-			while ((line = reader.readLine()) != null)
-			{
-				buffer.append(line);
-				buffer.append('\n');
-			}	
-			return new JSONArray(buffer.toString());
-		} catch (MalformedURLException e) {
-			throw new RuntimeException(e);
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		} catch (JSONException e) {
-			throw new RuntimeException(e);
-		} finally {
-			urlConnection.disconnect();
-		}
-	}
-
-	private class GetOpenTasks extends AsyncTask<String, Void, JSONArray> {
-
-		@Override
-		protected JSONArray doInBackground(String... params) {
-			return getTasks("open", params[0]);
-		}
-
-		@Override
-		protected void onPostExecute(JSONArray result) {
-			try {
-				mApp.loadOpenTasks(result);
-			} catch (JSONException e) {
-				Log.d(TAG, e.toString());
-			}
-		}
-
-	}
-
-	private class GetRequestedTasks extends AsyncTask<String, Void, JSONArray> {
-
-		@Override
-		protected JSONArray doInBackground(String... params) {
-			return getTasks("requested", params[0]);
-		}
-
-		@Override
-		protected void onPostExecute(JSONArray result) {
-			Log.d(TAG, result.toString());
-			try {
-				mApp.loadRequestedTasks(result);
-			} catch (JSONException e) {
-				Log.d(TAG, e.toString());
-			}
-		}
-
-	}
-
-	private class GetClaimedTasks extends AsyncTask<String, Void, JSONArray> {
-
-		@Override
-		protected JSONArray doInBackground(String... params) {
-			return getTasks("claimed", params[0]);
-		}
-
-		@Override
-		protected void onPostExecute(JSONArray result) {
-			try {
-				mApp.loadClaimedTasks(result);
-			} catch (JSONException e) {
-				Log.d(TAG, e.toString());
-			}
-		}
 	}
 
 	public class TabsPagerAdapter extends FragmentPagerAdapter {
