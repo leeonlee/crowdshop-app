@@ -26,7 +26,7 @@ import android.view.MenuItem;
 public class MainActivity extends FragmentActivity implements
 		ActionBar.TabListener {
 
-	private static final String TAG = CrowdShopApplication.class.getSimpleName();
+	private static final String TAG = MainActivity.class.getSimpleName();
 
 	private ViewPager viewPager;
 	private TabsPagerAdapter mAdapter;
@@ -34,7 +34,6 @@ public class MainActivity extends FragmentActivity implements
 	private static final int[] TAB_IDS = {R.string.friends, R.string.tasks, R.string.requests};
 	private CrowdShopApplication mApp;
 	private String username, first_name, last_name, user_id;
-	private TasksAdapter mOpenTaskIds, mClaimedTaskIds, mRequestedTaskIds;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -85,9 +84,11 @@ public class MainActivity extends FragmentActivity implements
 			}
 		});
 
+		/*
 		new GetOpenTasks().execute(username);
 		new GetClaimedTasks().execute(username);
 		new GetRequestedTasks().execute(username);
+		*/
 	}
 
 	@Override
@@ -127,6 +128,10 @@ public class MainActivity extends FragmentActivity implements
 	public void onTabUnselected(Tab tab, FragmentTransaction ft) {
 		// TODO Auto-generated method stub
 
+	}
+
+	public String getUsername() {
+		return username;
 	}
 
 	private static JSONArray getTasks(String taskKind, String username) {
@@ -218,24 +223,20 @@ public class MainActivity extends FragmentActivity implements
 
 		public Fragment getItem(int index){
 			ListFragment fragment = null;
-			TasksAdapter adapter = null;
 			switch(index){
 			case 0:
-				fragment = new OpenTaskFragment();
-				adapter = mApp.getOpenTaskIds();
+				fragment = new OpenTaskListFragment();
 				break;
 			case 1:
-				fragment = new ClaimedTaskFragment();
-				adapter = mApp.getClaimedTaskIds();
+				fragment = new ClaimedTaskListFragment();
 				break;
 			case 2:
-				fragment = new RequestedTaskFragment();
-				adapter = mApp.getRequestedTaskIds();
+				fragment = new RequestedTaskListFragment();
 				break;
 			default:
 				throw new IndexOutOfBoundsException("size is " + getCount() +  ", index is " + index);
 			}
-			fragment.setListAdapter(adapter);
+			Log.d(TAG, "Retrieved fragment index " + index);
 			return fragment;
 		}
 

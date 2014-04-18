@@ -1,12 +1,9 @@
 package com.github.leeonlee.crowdshop_app;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import android.app.Application;
-import android.util.Pair;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -20,21 +17,22 @@ public class CrowdShopApplication extends Application {
 
 	private static final String TAG = CrowdShopApplication.class.getSimpleName();
 	public static final String SERVER = "http://crowdshop-server.herokuapp.com";
-	public static final String TASK_ID = "com.github.leeonlee.crowdshop_app.TASK_ID";
+	public static final String PACKAGE_NAME = CrowdShopApplication.class.getPackage().getName();
+	public static final String TASK_ID = PACKAGE_NAME + ".TASK_ID";
 
 	private Long mThisUserId;
-	private TasksAdapter mOpenTaskIds;
-	private TasksAdapter mClaimedTaskIds;
-	private TasksAdapter mRequestedTaskIds;
+	private TaskListAdapter mOpenTaskIds;
+	private TaskListAdapter mClaimedTaskIds;
+	private TaskListAdapter mRequestedTaskIds;
 	private final Map<Long, UserInfo> mUsers = new HashMap<Long, UserInfo>();
 	private final Map<Long, TaskInfo> mTasks = new HashMap<Long, TaskInfo>();
 
 	@Override
 	public void onCreate() {
 		super.onCreate();
-		mOpenTaskIds = new TasksAdapter(this);
-		mClaimedTaskIds = new TasksAdapter(this);
-		mRequestedTaskIds = new TasksAdapter(this);
+		mOpenTaskIds = new TaskListAdapter(this);
+		mClaimedTaskIds = new TaskListAdapter(this);
+		mRequestedTaskIds = new TaskListAdapter(this);
 		unloadUser();
 	}
 	
@@ -42,15 +40,15 @@ public class CrowdShopApplication extends Application {
 		return mThisUserId;
 	}
 
-	public TasksAdapter getOpenTaskIds() {
+	public TaskListAdapter getOpenTaskIds() {
 		return mOpenTaskIds;
 	}
 
-	public TasksAdapter getClaimedTaskIds() {
+	public TaskListAdapter getClaimedTaskIds() {
 		return mClaimedTaskIds;
 	}
 
-	public TasksAdapter getRequestedTaskIds() {
+	public TaskListAdapter getRequestedTaskIds() {
 		return mRequestedTaskIds;
 	}
 
@@ -69,6 +67,35 @@ public class CrowdShopApplication extends Application {
 		mThisUserId = jsonObject.getLong("id");
 		mUsers.put(mThisUserId, new UserInfo(jsonObject));
 		Log.d(TAG, mUsers.toString());
+	}
+
+	public void loadTasks(TaskListAdapter adapter, JSONArray jsonArray) throws JSONException {
+		if (adapter == null)
+			throw new NullPointerException("adapter");
+		if (jsonArray == null)
+			throw new NullPointerException("jsonArray");
+
+		final int length = jsonArray.length();
+		for (int i = 0; i < length; ++i) {
+			JSONObject jsonObject = jsonArray.getJSONObject(i);
+
+			long taskId = jsonObject.getLong("id");
+			adapter.add(taskId);
+
+			JSONObject creator = jsonObject.getJSONObject("owner");
+			long creatorUserId = creator.getLong("id");
+			mUsers.put(creatorUserId, new UserInfo(creator));
+
+			JSONObject claimed = jsonObject.optJSONObject("claimed_by");
+			Long claimerUserId = claimed == null? null : claimed.getLong("id");
+			if (claimed != null)
+				mUsers.put(claimerUserId, new UserInfo(claimed));
+
+			mTasks.put(taskId, TaskInfo.make(creatorUserId, claimerUserId, jsonObject));
+		}
+
+		Log.d(TAG, mUsers.toString());
+		Log.d(TAG, mTasks.toString());
 	}
 
 	public void loadOpenTasks(JSONArray jsonArray) throws JSONException {
