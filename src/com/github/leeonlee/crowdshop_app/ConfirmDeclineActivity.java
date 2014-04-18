@@ -11,6 +11,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+import com.github.leeonlee.crowdshop_app.models.TaskInfo;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
@@ -21,10 +22,15 @@ import org.apache.http.message.BasicNameValuePair;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class ConfirmDeclineActivity extends Activity {
+
+	private static final NumberFormat DOLLAR_FORMAT = NumberFormat.getCurrencyInstance(Locale.US);
+
 	EditText username;
 	EditText password;
 	TextView signIn;
@@ -63,6 +69,11 @@ public class ConfirmDeclineActivity extends Activity {
 		totalField.setTypeface(type);
 		confirm.setTypeface(type);
 		decline.setTypeface(type);
+
+		TaskInfo taskInfo = mApp.getTaskInfo(mTaskId);
+		priceField.setText(DOLLAR_FORMAT.format(taskInfo.actualPrice));
+		rewardField.setText(DOLLAR_FORMAT.format(taskInfo.reward));
+		totalField.setText(DOLLAR_FORMAT.format(taskInfo.actualPrice + taskInfo.reward));
 
 		confirm.setClickable(true);
 		confirm.setOnClickListener(new OnClickListener() {
