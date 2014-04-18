@@ -1,30 +1,33 @@
 package com.github.leeonlee.crowdshop_app;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-
-import android.support.v4.app.*;
-import org.json.JSONArray;
-import org.json.JSONException;
-
 import android.app.ActionBar;
 import android.app.ActionBar.Tab;
 import android.app.FragmentTransaction;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.*;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.ViewGroup;
 
 public class MainActivity extends FragmentActivity implements
 		ActionBar.TabListener {
+
+	public static enum RequestCode {
+		CREATE_TASK, CLAIM_TASK, FINISH_TASK, CONFIRM_TASK;
+	}
+
+	public static enum TabIndex {
+		OPEN_TASKS, CLAIMED_TASKS, REQUESTED_TASKS;
+
+		private static final TabIndex[] TAB_INDICES = TabIndex.values();
+		public static TabIndex fromInt(int i) {
+			return TAB_INDICES[i];
+		}
+	}
 
 	private static final String TAG = MainActivity.class.getSimpleName();
 
@@ -100,11 +103,19 @@ public class MainActivity extends FragmentActivity implements
 		case R.id.action_add_task:
 			Intent i = new Intent(getApplicationContext(), TaskActivity.class);
 			i.putExtra("username", username);
-			startActivity(i);
+			startActivityForResult(i, RequestCode.CREATE_TASK.ordinal());
 
 			return true;
 		}
 		return false;
+	}
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+		if (requestCode == RequestCode.CREATE_TASK.ordinal()) {
+			refreshTab(TabIndex.REQUESTED_TASKS);
+		}
 	}
 
 	@Override
@@ -124,6 +135,10 @@ public class MainActivity extends FragmentActivity implements
 		return username;
 	}
 
+	public void refreshTab(TabIndex tabIndex) {
+		mAdapter.refreshItem(viewPager, tabIndex);
+	}
+
 	public class TabsPagerAdapter extends FragmentPagerAdapter {
 
 		public TabsPagerAdapter(FragmentManager fm) {
@@ -132,18 +147,16 @@ public class MainActivity extends FragmentActivity implements
 
 		public Fragment getItem(int index){
 			ListFragment fragment = null;
-			switch(index){
-			case 0:
+			switch(TabIndex.fromInt(index)){
+			case OPEN_TASKS:
 				fragment = new OpenTaskListFragment();
 				break;
-			case 1:
+			case CLAIMED_TASKS:
 				fragment = new ClaimedTaskListFragment();
 				break;
-			case 2:
+			case REQUESTED_TASKS:
 				fragment = new RequestedTaskListFragment();
 				break;
-			default:
-				throw new IndexOutOfBoundsException("size is " + getCount() +  ", index is " + index);
 			}
 			Log.d(TAG, "Retrieved fragment index " + index);
 			return fragment;
@@ -152,6 +165,12 @@ public class MainActivity extends FragmentActivity implements
 		@Override
 		public int getCount() {
 			return 3;
+		}
+
+		public void refreshItem(ViewGroup viewGroup, TabIndex tabIndex) {
+			int index = tabIndex.ordinal();
+			TaskListFragment fragment = (TaskListFragment)instantiateItem(viewGroup, index);
+			fragment.getTasks();
 		}
 	}
 }

@@ -1,24 +1,5 @@
 package com.github.leeonlee.crowdshop_app;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import com.github.leeonlee.crowdshop_app.models.TaskInfo;
-
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -32,6 +13,22 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class TaskActivity extends Activity {
 	Button submit;
@@ -153,19 +150,12 @@ public class TaskActivity extends Activity {
 		protected void onPostExecute(JSONObject result) {
 			pd.cancel();
 			CrowdShopApplication app = (CrowdShopApplication)getApplicationContext();
-			try
-			{
-				Log.d("", result.toString());
-				app.requestTask(result.getLong("id"),
-					TaskInfo.make(app.getThisUserId(), null, result));
-				int duration = Toast.LENGTH_SHORT;
-				Toast toast = Toast.makeText(app, "Submission complete!",
-						duration);
-				toast.show();
-				mActivity.finish();
-			} catch (JSONException e) {
-				throw new RuntimeException(e);
-			}
+			Log.d("", result.toString());
+			int duration = Toast.LENGTH_SHORT;
+			Toast toast = Toast.makeText(app, "Submission complete!",
+					duration);
+			toast.show();
+			mActivity.finish();
 		}
 
 	}

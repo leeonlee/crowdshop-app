@@ -1,11 +1,14 @@
 package com.github.leeonlee.crowdshop_app;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.List;
-
+import android.app.Activity;
+import android.graphics.Typeface;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
+import android.widget.TextView;
+import com.github.leeonlee.crowdshop_app.models.TaskInfo;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -15,16 +18,11 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 
-import android.app.Activity;
-import android.graphics.Typeface;
-import android.os.AsyncTask;
-import android.os.Bundle;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.Button;
-import android.widget.TextView;
-
-import com.github.leeonlee.crowdshop_app.models.TaskInfo;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DetailActivity extends Activity {
 	private TextView titleLabel, title, budgetLabel, budgetTextView,
@@ -111,7 +109,6 @@ public class DetailActivity extends Activity {
 		
 		@Override
 		protected void onPostExecute(Boolean result) {
-			mApp.claimTask(mTaskId);
 			finish();
 		}
 		

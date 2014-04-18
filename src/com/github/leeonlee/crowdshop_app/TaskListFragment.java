@@ -29,15 +29,18 @@ public abstract class TaskListFragment extends ListFragment {
 	private TaskListAdapter mAdapter;
 	private final String mTaskKind;
 	private final Class<? extends Activity> mActivityClass;
+	private final MainActivity.RequestCode mRequestCode;
 
-	protected TaskListFragment(String taskKind, Class<? extends Activity> activityClass) {
+	protected TaskListFragment(String taskKind,
+	                           Class<? extends Activity> activityClass, MainActivity.RequestCode requestCode) {
 		super();
 		mTaskKind = taskKind;
 		mActivityClass = activityClass;
+		mRequestCode = requestCode;
 	}
 
 	@Override
-	public void onCreate(Bundle savedInstanceState) {
+	public final void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		mAdapter = new TaskListAdapter(getActivity());
 		long[] taskIds;
@@ -46,17 +49,25 @@ public abstract class TaskListFragment extends ListFragment {
 			setListAdapter(mAdapter);
 		}
 		else {
-			new GetTasks().execute(((MainActivity)getActivity()).getUsername());
+			getTasks();
 		}
 		Log.d(TAG, "Called onCreate");
 	}
 
 	@Override
-	public void onSaveInstanceState(Bundle savedState) {
+	public final void onSaveInstanceState(Bundle savedState) {
 		super.onSaveInstanceState(savedState);
 		if (mAdapter != null)
 			savedState.putLongArray(TASK_IDS, mAdapter.getTaskIds());
 		Log.d(TAG, "Called onSaveInstanceState");
+	}
+
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+		setListShown(false);
+		getTasks();
+		Log.d(TAG, "called onActivityResult");
 	}
 
 	@Override
@@ -65,7 +76,14 @@ public abstract class TaskListFragment extends ListFragment {
 		Activity a = getActivity();
 		Intent i = new Intent(a, mActivityClass)
 			.putExtra(CrowdShopApplication.TASK_ID, (Long)l.getItemAtPosition(position));
-		a.startActivity(i);
+		startActivityForResult(i, mRequestCode.ordinal());
+	}
+
+	public final void getTasks() {
+		if (getView() != null)
+			setListShown(false);
+		mAdapter.clear();
+		new GetTasks().execute(((MainActivity)getActivity()).getUsername());
 	}
 
 	private class GetTasks extends AsyncTask<String, Void, long[]> {
@@ -107,6 +125,8 @@ public abstract class TaskListFragment extends ListFragment {
 			else {
 				mAdapter.addTaskIdsAndNotify(taskIds);
 				setListAdapter(mAdapter);
+				if (getView() != null)
+					setListShown(true);
 			}
 		}
 
