@@ -43,12 +43,7 @@ public abstract class TaskListFragment extends ListFragment {
 		setListAdapter(mAdapter);
 		long[] taskIds;
 		if (savedInstanceState != null && (taskIds = savedInstanceState.getLongArray(TASK_IDS)) != null) {
-			TaskListAdapter adapter = (TaskListAdapter)getListAdapter();
-			adapter.setNotifyOnChange(false);
-			adapter.clear();
-			for (long taskId : taskIds)
-				adapter.add(taskId);
-			adapter.notifyDataSetChanged();
+			mAdapter.addTaskIdsAndNotify(taskIds);
 		}
 		else {
 			new GetTasks().execute(((MainActivity)getActivity()).getUsername());
@@ -74,10 +69,10 @@ public abstract class TaskListFragment extends ListFragment {
 
 	protected abstract void putOtherParameters(Intent activityParameters);
 
-	private class GetTasks extends AsyncTask<String, Void, JSONArray> {
+	private class GetTasks extends AsyncTask<String, Void, long[]> {
 
 		@Override
-		protected JSONArray doInBackground(String... params) {
+		protected long[] doInBackground(String... params) {
 			try {
 				URL url = new URL(CrowdShopApplication.SERVER + '/' + mTaskKind + "tasks/" + params[0]);
 				HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
@@ -91,7 +86,9 @@ public abstract class TaskListFragment extends ListFragment {
 						buffer.append(line);
 						buffer.append('\n');
 					}
-					return new JSONArray(buffer.toString());
+					CrowdShopApplication app = ((CrowdShopApplication) getActivity().getApplicationContext());
+					JSONArray jsonArray = new JSONArray(buffer.toString());
+					return app.loadTasks(jsonArray);
 				} catch (JSONException e) {
 					return null;
 				} finally {
@@ -105,17 +102,11 @@ public abstract class TaskListFragment extends ListFragment {
 		}
 
 		@Override
-		protected void onPostExecute(JSONArray jsonArray) {
-			Toast toast = Toast.makeText(getActivity(), "Server error", Toast.LENGTH_SHORT);
-			if (jsonArray == null)
-				toast.show();
-			try {
-				((CrowdShopApplication) getActivity().getApplicationContext()).loadTasks(
-					mAdapter, jsonArray
-				);
-			} catch (JSONException e) {
-				toast.show();
-			}
+		protected void onPostExecute(long[] taskIds) {
+			if (taskIds == null)
+				Toast.makeText(getActivity(), "Server error", Toast.LENGTH_SHORT).show();
+			else
+				mAdapter.addTaskIdsAndNotify(taskIds);
 		}
 
 	}

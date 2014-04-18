@@ -32,6 +32,13 @@ public class TaskListAdapter extends ArrayAdapter<Long> {
 		return taskIds;
 	}
 
+	public void addTaskIdsAndNotify(long... taskIds) {
+		setNotifyOnChange(false);
+		for (long taskId : taskIds)
+			add(taskId);
+		notifyDataSetChanged();
+	}
+
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		LayoutInflater inflater = (LayoutInflater) getContext()

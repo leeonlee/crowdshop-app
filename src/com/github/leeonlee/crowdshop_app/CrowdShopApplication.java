@@ -69,18 +69,16 @@ public class CrowdShopApplication extends Application {
 		Log.d(TAG, mUsers.toString());
 	}
 
-	public void loadTasks(TaskListAdapter adapter, JSONArray jsonArray) throws JSONException {
-		if (adapter == null)
-			throw new NullPointerException("adapter");
+	public long[] loadTasks(JSONArray jsonArray) throws JSONException {
 		if (jsonArray == null)
 			throw new NullPointerException("jsonArray");
 
-		final int length = jsonArray.length();
-		for (int i = 0; i < length; ++i) {
+		long[] taskIds = new long[jsonArray.length()];
+		for (int i = 0; i < taskIds.length; ++i) {
 			JSONObject jsonObject = jsonArray.getJSONObject(i);
 
 			long taskId = jsonObject.getLong("id");
-			adapter.add(taskId);
+			taskIds[i] = taskId;
 
 			JSONObject creator = jsonObject.getJSONObject("owner");
 			long creatorUserId = creator.getLong("id");
@@ -96,6 +94,8 @@ public class CrowdShopApplication extends Application {
 
 		Log.d(TAG, mUsers.toString());
 		Log.d(TAG, mTasks.toString());
+
+		return taskIds;
 	}
 
 	public void loadOpenTasks(JSONArray jsonArray) throws JSONException {
