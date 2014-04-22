@@ -147,23 +147,26 @@ public class LoginActivity extends CrowdShopActivity {
 		                   @JsonProperty("username") String username,
 		                   @JsonProperty("first_name") String firstName,
 		                   @JsonProperty("last_name") String lastName) {
+			if (success == null)
+				throw new NullPointerException("success");
 			this.success = success;
 			this.id = id;
-			this.userInfo = new UserInfo(username, firstName, lastName);
+			this.userInfo = username == null || firstName == null || lastName == null?
+					null : new UserInfo(username, firstName, lastName);
 		}
 
 		public String getUsername() {
-			return userInfo.username;
+			return userInfo == null? null : userInfo.username;
 		}
 
 		@JsonProperty("first_name")
 		public String getFirstName() {
-			return userInfo.firstName;
+			return userInfo == null? null : userInfo.firstName;
 		}
 
 		@JsonProperty("last_name")
 		public String getLastName() {
-			return userInfo.lastName;
+			return userInfo == null? null : userInfo.lastName;
 		}
 
 	}
