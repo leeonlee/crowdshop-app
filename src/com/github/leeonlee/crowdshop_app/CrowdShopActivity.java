@@ -2,6 +2,8 @@ package com.github.leeonlee.crowdshop_app;
 
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
+import com.github.leeonlee.crowdshop_app.models.UserInfo;
 import com.octo.android.robospice.Jackson2GoogleHttpClientSpiceService;
 import com.octo.android.robospice.SpiceManager;
 
@@ -25,6 +27,12 @@ public abstract class CrowdShopActivity extends FragmentActivity {
 		super.onStop();
 		if (mSpiceManager.isStarted())
 			mSpiceManager.shouldStop();
+	}
+
+	protected static class UserInfoWithId {
+		public long id;
+		@JsonUnwrapped
+		public UserInfo userInfo;
 	}
 
 }

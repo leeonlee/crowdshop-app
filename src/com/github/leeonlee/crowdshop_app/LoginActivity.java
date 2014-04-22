@@ -10,11 +10,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import com.github.leeonlee.crowdshop_app.models.Success;
-import com.github.leeonlee.crowdshop_app.models.UserInfo;
 import com.google.api.client.http.GenericUrl;
 import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.UrlEncodedContent;
@@ -94,7 +91,9 @@ public class LoginActivity extends CrowdShopActivity {
 										).show();
 									}
 									else {
-										mApp.loadUser(loginResult.id, loginResult.userInfo);
+										mApp.loadUser(loginResult.userInfoWithId.id,
+												loginResult.userInfoWithId.userInfo
+										);
 										startActivity(new Intent(mApp, MainActivity.class));
 										finish();
 									}
@@ -134,40 +133,11 @@ public class LoginActivity extends CrowdShopActivity {
 
 	}
 
-	public static final class LoginResult {
+	private static final class LoginResult {
 
-		public final Success success;
-		public final long id;
-		@JsonIgnore
-		public final UserInfo userInfo;
-
-		@JsonCreator
-		public LoginResult(@JsonProperty("success") Success success,
-		                   @JsonProperty("id") long id,
-		                   @JsonProperty("username") String username,
-		                   @JsonProperty("first_name") String firstName,
-		                   @JsonProperty("last_name") String lastName) {
-			if (success == null)
-				throw new NullPointerException("success");
-			this.success = success;
-			this.id = id;
-			this.userInfo = username == null || firstName == null || lastName == null?
-					null : new UserInfo(username, firstName, lastName);
-		}
-
-		public String getUsername() {
-			return userInfo == null? null : userInfo.username;
-		}
-
-		@JsonProperty("first_name")
-		public String getFirstName() {
-			return userInfo == null? null : userInfo.firstName;
-		}
-
-		@JsonProperty("last_name")
-		public String getLastName() {
-			return userInfo == null? null : userInfo.lastName;
-		}
+		public Success success;
+		@JsonUnwrapped
+		public UserInfoWithId userInfoWithId;
 
 	}
 }
