@@ -1,6 +1,5 @@
 package com.github.leeonlee.crowdshop_app;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Typeface;
@@ -25,18 +24,16 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MoneyActivity extends Activity {
+public class MoneyActivity extends CrowdShopActivity {
 	Button submitButton;
 	EditText inputPrice;
 	ProgressDialog pd;
-	private CrowdShopApplication mApp;
 	private long mTaskId;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.money_layout);
-		mApp = (CrowdShopApplication)getApplicationContext();
 		mTaskId = getIntent().getLongExtra(CrowdShopApplication.TASK_ID, 0);
 
 		Typeface type = Typeface.createFromAsset(getAssets(),

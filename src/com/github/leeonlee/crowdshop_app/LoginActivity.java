@@ -1,22 +1,5 @@
 package com.github.leeonlee.crowdshop_app;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -30,8 +13,24 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONException;
+import org.json.JSONObject;
 
-public class LoginActivity extends Activity {
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
+
+public class LoginActivity extends CrowdShopActivity {
 	EditText username;
 	EditText password;
 	TextView signIn;
@@ -131,9 +130,9 @@ public class LoginActivity extends Activity {
 							"Invalid credentials", duration);
 					toast.show();
 				} else if (json.getString("success").equals("success")) {
-					Intent i = new Intent(getApplicationContext(),
+					Intent i = new Intent(mApp,
 							MainActivity.class);
-					((CrowdShopApplication)getApplicationContext()).loadUser(json);
+					mApp.loadUser(json);
 					i.putExtra("username", json.getString("username"));
 					i.putExtra("first_name", json.getString("first_name"));
 					i.putExtra("last_name", json.getString("last_name"));

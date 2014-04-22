@@ -1,6 +1,5 @@
 package com.github.leeonlee.crowdshop_app;
 
-import android.app.Activity;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -24,12 +23,11 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DetailActivity extends Activity {
+public class DetailActivity extends CrowdShopActivity {
 	private TextView titleLabel, title, budgetLabel, budgetTextView,
 			rewardLabel, additionalComments, additionalCommentsLabel, reward;
 	private Button claim;
 	private long mTaskId;
-	private CrowdShopApplication mApp;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -37,7 +35,6 @@ public class DetailActivity extends Activity {
 		//setContentView(R.layout.detail_layout);
 		setContentView(R.layout.detail_layout);
 		mTaskId = getIntent().getLongExtra(CrowdShopApplication.TASK_ID, 0l);
-		mApp = (CrowdShopApplication)getApplicationContext();
 
 		initializeAssets();
 

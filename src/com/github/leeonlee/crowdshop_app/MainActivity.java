@@ -13,7 +13,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.ViewGroup;
 
-public class MainActivity extends FragmentActivity implements
+public class MainActivity extends CrowdShopActivity implements
 		ActionBar.TabListener {
 
 	public static enum RequestCode {
@@ -35,15 +35,13 @@ public class MainActivity extends FragmentActivity implements
 	private TabsPagerAdapter mAdapter;
 	private ActionBar actionBar;
 	private static final int[] TAB_IDS = {R.string.friends, R.string.tasks, R.string.requests};
-	private CrowdShopApplication mApp;
 	private String username, first_name, last_name, user_id;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		mApp = (CrowdShopApplication)getApplicationContext();
-		
+
 		Bundle extras = getIntent().getExtras();
 		if (extras != null){
 			username = extras.getString("username");

@@ -1,6 +1,5 @@
 package com.github.leeonlee.crowdshop_app;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
@@ -27,7 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-public class ConfirmDeclineActivity extends Activity {
+public class ConfirmDeclineActivity extends CrowdShopActivity {
 
 	private static final NumberFormat DOLLAR_FORMAT = NumberFormat.getCurrencyInstance(Locale.US);
 
@@ -36,7 +35,6 @@ public class ConfirmDeclineActivity extends Activity {
 	TextView signIn;
 	Button login;
 	ProgressDialog pd;
-	private CrowdShopApplication mApp;
 	private long mTaskId;
 
 	TextView priceLabel, priceField, rewardLabel, rewardField, totalLabel,
@@ -47,7 +45,6 @@ public class ConfirmDeclineActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.confirmdecline_layout);
-		mApp = (CrowdShopApplication) getApplicationContext();
 		mTaskId = getIntent().getLongExtra(CrowdShopApplication.TASK_ID, 0);
 
 		priceLabel = (TextView) findViewById(R.id.finalPriceLabel);

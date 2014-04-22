@@ -17,6 +17,9 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme"
         android:name="com.github.leeonlee.crowdshop_app.CrowdShopApplication" >
+        <service
+            android:name="com.octo.android.robospice.Jackson2GoogleHttpClientSpiceService"
+            android:exported="false" />
         <activity
             android:name="com.github.leeonlee.crowdshop_app.TaskActivity"
             android:label="task"
@@ -51,6 +54,7 @@
             android:label="confirm-decline"
             android:theme="@android:style/Theme.NoTitleBar" >
         </activity>
+        <activity android:name=".CrowdShopActivity"/>
 
     </application>
 

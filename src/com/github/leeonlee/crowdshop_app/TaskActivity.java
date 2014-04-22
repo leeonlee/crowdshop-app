@@ -1,6 +1,5 @@
 package com.github.leeonlee.crowdshop_app;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Typeface;
@@ -30,12 +29,11 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TaskActivity extends Activity {
+public class TaskActivity extends CrowdShopActivity {
 	Button submit;
 	EditText title, desc, budget, reward;
 	TextView startText;
 	ProgressDialog pd;
-	Activity mActivity;
 	String username;
 
 	@Override
@@ -43,7 +41,6 @@ public class TaskActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.task_layout);
 
-		mActivity = this;
 		Typeface type = Typeface.createFromAsset(getAssets(),
 				"fonts/Hey_Pretty_Girl.ttf");
 
@@ -109,7 +106,7 @@ public class TaskActivity extends Activity {
 
 	private class CreateTask extends AsyncTask<String, Void, JSONObject> {
 		public void onPreExecute() {
-			pd = new ProgressDialog(mActivity);
+			pd = new ProgressDialog(TaskActivity.this);
 			pd.setCancelable(true);
 			pd.setMessage("Submitting..");
 			pd.show();
@@ -155,7 +152,7 @@ public class TaskActivity extends Activity {
 			Toast toast = Toast.makeText(app, "Submission complete!",
 					duration);
 			toast.show();
-			mActivity.finish();
+			finish();
 		}
 
 	}

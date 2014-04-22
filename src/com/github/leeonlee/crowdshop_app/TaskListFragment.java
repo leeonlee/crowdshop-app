@@ -28,11 +28,12 @@ public abstract class TaskListFragment extends ListFragment {
 	private static final String TASK_IDS = CrowdShopApplication.PACKAGE_NAME + ".TASK_IDS";
 	private TaskListAdapter mAdapter;
 	private final String mTaskKind;
-	private final Class<? extends Activity> mActivityClass;
+	private final Class<? extends CrowdShopActivity> mActivityClass;
 	private final MainActivity.RequestCode mRequestCode;
 
 	protected TaskListFragment(String taskKind,
-	                           Class<? extends Activity> activityClass, MainActivity.RequestCode requestCode) {
+	                           Class<? extends CrowdShopActivity> activityClass,
+	                           MainActivity.RequestCode requestCode) {
 		super();
 		mTaskKind = taskKind;
 		mActivityClass = activityClass;
