@@ -11,7 +11,9 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
+import com.github.leeonlee.crowdshop_app.models.IdObject;
 import com.github.leeonlee.crowdshop_app.models.Success;
+import com.github.leeonlee.crowdshop_app.models.UserInfo;
 import com.google.api.client.http.GenericUrl;
 import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.UrlEncodedContent;
@@ -92,7 +94,7 @@ public class LoginActivity extends CrowdShopActivity {
 									}
 									else {
 										mApp.loadUser(loginResult.userInfoWithId.id,
-												loginResult.userInfoWithId.userInfo
+												loginResult.userInfoWithId.object
 										);
 										startActivity(new Intent(mApp, MainActivity.class));
 										finish();
@@ -137,7 +139,7 @@ public class LoginActivity extends CrowdShopActivity {
 
 		public Success success;
 		@JsonUnwrapped
-		public UserInfoWithId userInfoWithId;
+		public IdObject<UserInfo> userInfoWithId;
 
 	}
 }

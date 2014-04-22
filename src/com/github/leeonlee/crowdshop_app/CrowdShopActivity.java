@@ -29,10 +29,4 @@ public abstract class CrowdShopActivity extends FragmentActivity {
 			mSpiceManager.shouldStop();
 	}
 
-	protected static class UserInfoWithId {
-		public long id;
-		@JsonUnwrapped
-		public UserInfo userInfo;
-	}
-
 }
