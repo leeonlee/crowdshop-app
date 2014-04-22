@@ -35,20 +35,11 @@ public class MainActivity extends CrowdShopActivity implements
 	private TabsPagerAdapter mAdapter;
 	private ActionBar actionBar;
 	private static final int[] TAB_IDS = {R.string.friends, R.string.tasks, R.string.requests};
-	private String username, first_name, last_name, user_id;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-
-		Bundle extras = getIntent().getExtras();
-		if (extras != null){
-			username = extras.getString("username");
-			first_name = extras.getString("first_name");
-			last_name = extras.getString("last_name");
-			user_id = extras.getString("user_id");
-		}
 
 		// Initilization
 		viewPager = (ViewPager) findViewById(R.id.pager);
@@ -100,7 +91,7 @@ public class MainActivity extends CrowdShopActivity implements
 		switch (item.getItemId()) {
 		case R.id.action_add_task:
 			Intent i = new Intent(getApplicationContext(), TaskActivity.class);
-			i.putExtra("username", username);
+			i.putExtra("username", mApp.getUsername());
 			startActivityForResult(i, RequestCode.CREATE_TASK.ordinal());
 
 			return true;
@@ -127,10 +118,6 @@ public class MainActivity extends CrowdShopActivity implements
 
 	@Override
 	public void onTabUnselected(Tab tab, FragmentTransaction ft) {
-	}
-
-	public String getUsername() {
-		return username;
 	}
 
 	public void refreshTab(TabIndex tabIndex) {

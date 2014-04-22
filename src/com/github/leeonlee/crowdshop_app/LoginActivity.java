@@ -1,11 +1,8 @@
 package com.github.leeonlee.crowdshop_app;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -13,22 +10,21 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.github.leeonlee.crowdshop_app.models.Success;
+import com.github.leeonlee.crowdshop_app.models.UserInfo;
+import com.google.api.client.http.GenericUrl;
+import com.google.api.client.http.HttpRequest;
+import com.google.api.client.http.UrlEncodedContent;
+import com.google.api.client.util.ObjectParser;
+import com.octo.android.robospice.persistence.exception.SpiceException;
+import com.octo.android.robospice.request.googlehttpclient.GoogleHttpClientSpiceRequest;
+import com.octo.android.robospice.request.listener.RequestListener;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 public class LoginActivity extends CrowdShopActivity {
 	EditText username;
@@ -36,14 +32,12 @@ public class LoginActivity extends CrowdShopActivity {
 	TextView signIn;
 	Button login;
 	ProgressDialog pd;
-	Activity mActivity;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.login_layout);
 
-		mActivity = this;
 		username = (EditText) findViewById(R.id.username);
 		password = (EditText) findViewById(R.id.password);
 		signIn = (TextView) findViewById(R.id.signIn);
@@ -64,100 +58,113 @@ public class LoginActivity extends CrowdShopActivity {
 				String usernameString = username.getText().toString();
 				String passwordString = password.getText().toString();
 
-				Context context = getApplicationContext();
 				int duration = Toast.LENGTH_SHORT;
 				if (usernameString.equals("")) {
-					Toast toast = Toast.makeText(context, "Enter a username",
+					Toast toast = Toast.makeText(LoginActivity.this, "Enter a username",
 							duration);
 					toast.show();
 				} else if (passwordString.equals("")) {
-					Toast toast = Toast.makeText(context, "Enter a password",
+					Toast toast = Toast.makeText(LoginActivity.this, "Enter a password",
 							duration);
 					toast.show();
 				} else {
-					new Login().execute(usernameString, passwordString);
+					pd = new ProgressDialog(LoginActivity.this);
+					pd.setCancelable(true);
+					pd.setMessage("Authenticating..");
+					pd.show();
+					mSpiceManager.execute(new LoginRequest(usernameString, passwordString),
+							new RequestListener<LoginResult>() {
+
+								@Override
+								public void onRequestFailure(SpiceException spiceException) {
+									pd.dismiss();
+									Toast.makeText(LoginActivity.this,
+											"Couldn't log in: " + spiceException.getLocalizedMessage(),
+											Toast.LENGTH_LONG
+									).show();
+								}
+
+								@Override
+								public void onRequestSuccess(LoginResult loginResult) {
+									pd.dismiss();
+									if (loginResult.success != Success.success) {
+										Toast.makeText(LoginActivity.this,
+												"Invalid credentials",
+												Toast.LENGTH_LONG
+										).show();
+									}
+									else {
+										mApp.loadUser(loginResult.id, loginResult.userInfo);
+										startActivity(new Intent(mApp, MainActivity.class));
+										finish();
+									}
+								}
+							});
 				}
 			}
 		});
 	}
 
-	private class Login extends AsyncTask<String, String, String> {
-		public void onPreExecute() {
-			pd = new ProgressDialog(mActivity);
-			pd.setCancelable(true);
-			pd.setMessage("Authenticating..");
-			pd.show();
+	private static class LoginRequest extends GoogleHttpClientSpiceRequest<LoginResult> {
+
+		private static final String URL = CrowdShopApplication.SERVER + "/loginview";
+
+		private final String mUsername;
+		private final String mPassword;
+
+		public LoginRequest(String username, String password) {
+			super(LoginResult.class);
+			mUsername = username;
+			mPassword = password;
 		}
 
 		@Override
-		protected String doInBackground(String... params) {
-			String urlString = "http://crowdshop-server.herokuapp.com/loginview/";
-
-			String result = "";
-
-			DefaultHttpClient httpclient = new DefaultHttpClient();
-			HttpPost httppostreq = new HttpPost(urlString);
-			try {
-				List<NameValuePair> pairs = new ArrayList<NameValuePair>();
-				pairs.add(new BasicNameValuePair("username", params[0]));
-				pairs.add(new BasicNameValuePair("password", params[1]));
-				httppostreq.setEntity(new UrlEncodedFormEntity(pairs));
-				HttpResponse httpresponse = httpclient.execute(httppostreq);
-				HttpEntity resultentity = httpresponse.getEntity();
-				InputStream inputstream = resultentity.getContent();
-				result = convertInputStream(inputstream);
-
-			} catch (UnsupportedEncodingException e1) {
-				e1.printStackTrace();
-			} catch (ClientProtocolException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-
-			return result;
+		public LoginResult loadDataFromNetwork() throws Exception {
+			Map<String, String> body = new HashMap<String, String>();
+			body.put("username", mUsername);
+			body.put("password", mPassword);
+			HttpRequest httpRequest = getHttpRequestFactory().buildPostRequest(
+					new GenericUrl(URL),
+					new UrlEncodedContent(body)
+			);
+			ObjectParser parser = new ObjectMapperParser();
+			httpRequest.setParser(parser);
+			return httpRequest.execute().parseAs(getResultType());
 		}
 
-		protected void onPostExecute(String result) {
-			JSONObject json = null;
-			Context context = getApplicationContext();
-			int duration = Toast.LENGTH_SHORT;
-			pd.cancel();
-			try {
-				json = new JSONObject(result);
-				if (json.getString("success").equals("invalid")) {
-					Toast toast = Toast.makeText(context,
-							"Invalid credentials", duration);
-					toast.show();
-				} else if (json.getString("success").equals("success")) {
-					Intent i = new Intent(mApp,
-							MainActivity.class);
-					mApp.loadUser(json);
-					i.putExtra("username", json.getString("username"));
-					i.putExtra("first_name", json.getString("first_name"));
-					i.putExtra("last_name", json.getString("last_name"));
-					i.putExtra("user_id", json.getString("id"));
-					startActivity(i);
-					mActivity.finish();
-				}
-
-			} catch (JSONException e) {
-				e.printStackTrace();
-			}
-
-			/*
-			 * mActivity.finish();
-			 */
-		}
 	}
 
-	private static String convertInputStream(InputStream in) throws IOException {
-		int bytesRead;
-		byte[] contents = new byte[1024];
-		String string = null;
-		while ((bytesRead = in.read(contents)) != -1) {
-			string = new String(contents, 0, bytesRead);
+	public static final class LoginResult {
+
+		public final Success success;
+		public final long id;
+		@JsonIgnore
+		public final UserInfo userInfo;
+
+		@JsonCreator
+		public LoginResult(@JsonProperty("success") Success success,
+		                   @JsonProperty("id") long id,
+		                   @JsonProperty("username") String username,
+		                   @JsonProperty("first_name") String firstName,
+		                   @JsonProperty("last_name") String lastName) {
+			this.success = success;
+			this.id = id;
+			this.userInfo = new UserInfo(username, firstName, lastName);
 		}
-		return string;
+
+		public String getUsername() {
+			return userInfo.username;
+		}
+
+		@JsonProperty("first_name")
+		public String getFirstName() {
+			return userInfo.firstName;
+		}
+
+		@JsonProperty("last_name")
+		public String getLastName() {
+			return userInfo.lastName;
+		}
+
 	}
 }

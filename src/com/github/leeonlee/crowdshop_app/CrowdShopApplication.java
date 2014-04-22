@@ -40,13 +40,11 @@ public class CrowdShopApplication extends Application {
 		return mTasks.get(taskId);
 	}
 
-	public void loadUser(JSONObject jsonObject) throws JSONException {
-		if (jsonObject == null)
-			throw new NullPointerException("jsonObject");
-		
-		mThisUserId = jsonObject.getLong("id");
-		mUsers.put(mThisUserId, new UserInfo(jsonObject));
-		Log.d(TAG, mUsers.toString());
+	public void loadUser(long id, UserInfo userInfo) {
+		if (userInfo == null)
+			throw new NullPointerException("userInfo");
+		mThisUserId = id;
+		mUsers.put(id, userInfo);
 	}
 
 	public long[] loadTasks(JSONArray jsonArray) throws JSONException {
@@ -62,12 +60,12 @@ public class CrowdShopApplication extends Application {
 
 			JSONObject creator = jsonObject.getJSONObject("owner");
 			long creatorUserId = creator.getLong("id");
-			mUsers.put(creatorUserId, new UserInfo(creator));
+			mUsers.put(creatorUserId, UserInfo.createUserInfo(creator));
 
 			JSONObject claimed = jsonObject.optJSONObject("claimed_by");
 			Long claimerUserId = claimed == null? null : claimed.getLong("id");
 			if (claimed != null)
-				mUsers.put(claimerUserId, new UserInfo(claimed));
+				mUsers.put(claimerUserId, UserInfo.createUserInfo(claimed));
 
 			mTasks.put(taskId, TaskInfo.make(creatorUserId, claimerUserId, jsonObject));
 		}
@@ -82,6 +80,10 @@ public class CrowdShopApplication extends Application {
 		mThisUserId = null;
 		mUsers.clear();
 		mTasks.clear();
+	}
+
+	public String getUsername() {
+		return mThisUserId == null? null : mUsers.get(mThisUserId).username;
 	}
 
 }

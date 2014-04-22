@@ -84,7 +84,7 @@ public abstract class TaskListFragment extends ListFragment {
 		if (getView() != null)
 			setListShown(false);
 		mAdapter.clear();
-		new GetTasks().execute(((MainActivity)getActivity()).getUsername());
+		new GetTasks().execute(((CrowdShopApplication)getActivity().getApplication()).getUsername());
 	}
 
 	private class GetTasks extends AsyncTask<String, Void, long[]> {
