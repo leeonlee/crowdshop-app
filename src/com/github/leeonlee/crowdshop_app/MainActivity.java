@@ -5,13 +5,17 @@ import android.app.ActionBar.Tab;
 import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.*;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.ViewGroup;
+
+import java.util.EnumMap;
+import java.util.Map;
 
 public class MainActivity extends CrowdShopActivity implements
 		ActionBar.TabListener {
@@ -121,29 +125,34 @@ public class MainActivity extends CrowdShopActivity implements
 	}
 
 	public void refreshTab(TabIndex tabIndex) {
-		mAdapter.refreshItem(viewPager, tabIndex);
+		mAdapter.refreshItem(tabIndex);
 	}
 
-	public class TabsPagerAdapter extends FragmentPagerAdapter {
+	public static class TabsPagerAdapter extends FragmentPagerAdapter {
+
+		private final Map<TabIndex, TaskListFragment> mFragments
+				= new EnumMap<TabIndex, TaskListFragment>(TabIndex.class);
 
 		public TabsPagerAdapter(FragmentManager fm) {
 			super(fm);
 		}
 
 		public Fragment getItem(int index){
-			ListFragment fragment = null;
-			switch(TabIndex.fromInt(index)){
-			case OPEN_TASKS:
-				fragment = new OpenTaskListFragment();
-				break;
-			case CLAIMED_TASKS:
-				fragment = new ClaimedTaskListFragment();
-				break;
-			case REQUESTED_TASKS:
-				fragment = new RequestedTaskListFragment();
-				break;
+			TabIndex tabIndex = TabIndex.fromInt(index);
+			TaskListFragment fragment = null;
+			switch (tabIndex) {
+				case OPEN_TASKS:
+					fragment = new OpenTaskListFragment();
+					break;
+				case CLAIMED_TASKS:
+					fragment = new ClaimedTaskListFragment();
+					break;
+				case REQUESTED_TASKS:
+					fragment = new RequestedTaskListFragment();
+					break;
 			}
 			Log.d(TAG, "Retrieved fragment index " + index);
+			mFragments.put(tabIndex, fragment);
 			return fragment;
 		}
 
@@ -152,10 +161,12 @@ public class MainActivity extends CrowdShopActivity implements
 			return 3;
 		}
 
-		public void refreshItem(ViewGroup viewGroup, TabIndex tabIndex) {
-			int index = tabIndex.ordinal();
-			TaskListFragment fragment = (TaskListFragment)instantiateItem(viewGroup, index);
-			fragment.getTasks();
+		public void refreshItem(TabIndex tabIndex) {
+			TaskListFragment fragment = mFragments.get(tabIndex);
+			if (fragment != null) {
+				Log.d(TAG, "Refreshing " + tabIndex);
+				fragment.getTasks();
+			}
 		}
 	}
 }

@@ -61,6 +61,12 @@ public abstract class TaskListFragment extends ListFragment {
 	}
 
 	@Override
+	public void onViewCreated(View view, Bundle savedInstanceState) {
+		super.onViewCreated(view, savedInstanceState);
+		setListShown(getListAdapter() != null);
+	}
+
+	@Override
 	public void onStart() {
 		super.onStart();
 		mSpiceManager.start(this.getActivity());
@@ -75,7 +81,7 @@ public abstract class TaskListFragment extends ListFragment {
 	@Override
 	public final void onSaveInstanceState(Bundle savedState) {
 		super.onSaveInstanceState(savedState);
-		if (mAdapter != null)
+		if (getListAdapter() != null)
 			savedState.putLongArray(TASK_IDS, mAdapter.getTaskIds());
 		Log.d(TAG, "Called onSaveInstanceState");
 	}
@@ -83,7 +89,6 @@ public abstract class TaskListFragment extends ListFragment {
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
-		setListShown(false);
 		getTasks();
 		Log.d(TAG, "called onActivityResult");
 	}
@@ -98,6 +103,7 @@ public abstract class TaskListFragment extends ListFragment {
 	}
 
 	public final void getTasks() {
+		setListAdapter(null);
 		if (getView() != null)
 			setListShown(false);
 		mSpiceManager.execute(new GetTasksRequest(mTaskKind, mApp.getUsername()),
