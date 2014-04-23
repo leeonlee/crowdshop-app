@@ -1,7 +1,5 @@
 package com.github.leeonlee.crowdshop_app;
 
-import java.util.Date;
-
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -13,9 +11,10 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-
 import com.github.leeonlee.crowdshop_app.models.TaskInfo;
 import com.github.leeonlee.crowdshop_app.models.UserInfo;
+
+import java.util.Date;
 
 public class TaskListAdapter extends ArrayAdapter<Long> {
 
@@ -32,8 +31,9 @@ public class TaskListAdapter extends ArrayAdapter<Long> {
 		return taskIds;
 	}
 
-	public void addTaskIdsAndNotify(long... taskIds) {
+	public void setTaskIdsAndNotify(long... taskIds) {
 		setNotifyOnChange(false);
+		clear();
 		for (long taskId : taskIds)
 			add(taskId);
 		notifyDataSetChanged();

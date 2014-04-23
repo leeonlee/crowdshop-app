@@ -14,7 +14,7 @@ public final class TaskInfo {
 	public final int actualPrice;
 	public final int reward;
 
-	private TaskInfo(
+	public TaskInfo(
 		long creatorUserId,
 		Long claimerUserId,
 		String timestamp,

@@ -2,22 +2,23 @@ package com.github.leeonlee.crowdshop_app;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.util.Log;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.Toast;
-import org.json.JSONArray;
-import org.json.JSONException;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.github.leeonlee.crowdshop_app.models.IdObject;
+import com.github.leeonlee.crowdshop_app.models.UserInfo;
+import com.google.api.client.http.GenericUrl;
+import com.google.api.client.http.HttpRequest;
+import com.octo.android.robospice.Jackson2GoogleHttpClientSpiceService;
+import com.octo.android.robospice.SpiceManager;
+import com.octo.android.robospice.persistence.exception.SpiceException;
+import com.octo.android.robospice.request.googlehttpclient.GoogleHttpClientSpiceRequest;
+import com.octo.android.robospice.request.listener.RequestListener;
 
 /**
  * A fragment containing a list of tasks.
@@ -26,6 +27,8 @@ public abstract class TaskListFragment extends ListFragment {
 
 	private static final String TAG = TaskListFragment.class.getSimpleName();
 	private static final String TASK_IDS = CrowdShopApplication.PACKAGE_NAME + ".TASK_IDS";
+	private final SpiceManager mSpiceManager = new SpiceManager(Jackson2GoogleHttpClientSpiceService.class);
+	private CrowdShopApplication mApp;
 	private TaskListAdapter mAdapter;
 	private final String mTaskKind;
 	private final Class<? extends CrowdShopActivity> mActivityClass;
@@ -43,16 +46,30 @@ public abstract class TaskListFragment extends ListFragment {
 	@Override
 	public final void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		mAdapter = new TaskListAdapter(getActivity());
+		Activity a = getActivity();
+		mApp = (CrowdShopApplication)a.getApplication();
+		mAdapter = new TaskListAdapter(a);
 		long[] taskIds;
 		if (savedInstanceState != null && (taskIds = savedInstanceState.getLongArray(TASK_IDS)) != null) {
-			mAdapter.addTaskIdsAndNotify(taskIds);
+			mAdapter.setTaskIdsAndNotify(taskIds);
 			setListAdapter(mAdapter);
 		}
 		else {
 			getTasks();
 		}
 		Log.d(TAG, "Called onCreate");
+	}
+
+	@Override
+	public void onStart() {
+		super.onStart();
+		mSpiceManager.start(this.getActivity());
+	}
+
+	@Override
+	public void onStop() {
+		mSpiceManager.shouldStop();
+		super.onStop();
 	}
 
 	@Override
@@ -83,54 +100,66 @@ public abstract class TaskListFragment extends ListFragment {
 	public final void getTasks() {
 		if (getView() != null)
 			setListShown(false);
-		mAdapter.clear();
-		new GetTasks().execute(((CrowdShopApplication)getActivity().getApplication()).getUsername());
+		mSpiceManager.execute(new GetTasksRequest(mTaskKind, mApp.getUsername()),
+				new RequestListener<GetTaskResult[]>() {
+
+					@Override
+					public void onRequestFailure(SpiceException spiceException) {
+						Toast.makeText(getActivity(),
+								"Server error: " + spiceException.getLocalizedMessage(),
+								Toast.LENGTH_LONG
+						).show();
+					}
+
+					@Override
+					public void onRequestSuccess(GetTaskResult[] getTaskResults) {
+						mAdapter.setTaskIdsAndNotify(mApp.loadTasks(getTaskResults));
+						setListAdapter(mAdapter);
+						if (getView() != null)
+							setListShown(true);
+					}
+				}
+		);
 	}
 
-	private class GetTasks extends AsyncTask<String, Void, long[]> {
+	@JsonIgnoreProperties(ignoreUnknown = true)
+	public static class GetTaskResult {
+		public long id;
+		@JsonProperty("owner")
+		public IdObject<UserInfo> creator;
+		@JsonProperty("claimed_by")
+		public IdObject<UserInfo> claimedBy;
+		@JsonProperty("timeStamp")
+		public String timestamp;
+		@JsonProperty("title")
+		public String name;
+		@JsonProperty("desc")
+		public String description;
+		public int threshold;
+		@JsonProperty("actual_price")
+		public int actualPrice;
+		public int reward;
+	}
 
-		@Override
-		protected long[] doInBackground(String... params) {
-			try {
-				URL url = new URL(CrowdShopApplication.SERVER + '/' + mTaskKind + "tasks/" + params[0]);
-				HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-				if (urlConnection.getResponseCode() % 100 == 5)
-					return null;
-				try {
-					BufferedReader reader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
-					StringBuilder buffer = new StringBuilder();
-					String line;
-					while ((line = reader.readLine()) != null) {
-						buffer.append(line);
-						buffer.append('\n');
-					}
-					CrowdShopApplication app = ((CrowdShopApplication) getActivity().getApplicationContext());
-					JSONArray jsonArray = new JSONArray(buffer.toString());
-					return app.loadTasks(jsonArray);
-				} catch (JSONException e) {
-					return null;
-				} finally {
-					urlConnection.disconnect();
-				}
-			} catch (MalformedURLException e) {
-				throw new RuntimeException(e);
-			} catch (IOException e) {
-				throw new RuntimeException(e);
-			}
+	private static class GetTasksRequest extends GoogleHttpClientSpiceRequest<GetTaskResult[]> {
+
+		private final String mKind;
+		private final String mUsername;
+
+		public GetTasksRequest(String kind, String username) {
+			super(GetTaskResult[].class);
+			mKind = kind;
+			mUsername = username;
 		}
 
 		@Override
-		protected void onPostExecute(long[] taskIds) {
-			if (taskIds == null)
-				Toast.makeText(getActivity(), "Server error", Toast.LENGTH_SHORT).show();
-			else {
-				mAdapter.addTaskIdsAndNotify(taskIds);
-				setListAdapter(mAdapter);
-				if (getView() != null)
-					setListShown(true);
-			}
+		public GetTaskResult[] loadDataFromNetwork() throws Exception {
+			HttpRequest httpRequest = getHttpRequestFactory().buildGetRequest(
+					new GenericUrl(CrowdShopApplication.SERVER + '/' + mKind + "tasks/" + mUsername)
+			);
+			httpRequest.setParser(new ObjectMapperParser());
+			return httpRequest.execute().parseAs(getResultType());
 		}
-
 	}
 
 }

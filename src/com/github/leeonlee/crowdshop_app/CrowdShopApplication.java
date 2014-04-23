@@ -47,6 +47,35 @@ public class CrowdShopApplication extends Application {
 		mUsers.put(id, userInfo);
 	}
 
+	public long[] loadTasks(TaskListFragment.GetTaskResult[] results) {
+		if (results == null)
+			throw new NullPointerException("results");
+
+		long[] taskIds = new long[results.length];
+		for (int i = 0; i < taskIds.length; ++i) {
+			TaskListFragment.GetTaskResult result = results[i];
+
+			taskIds[i] = result.id;
+
+			mUsers.put(result.creator.id, result.creator.object);
+			boolean hasClaimedBy = result.claimedBy != null;
+			if (hasClaimedBy)
+				mUsers.put(result.claimedBy.id, result.claimedBy.object);
+
+			mTasks.put(result.id, new TaskInfo(
+					result.creator.id,
+					hasClaimedBy? result.claimedBy.id : null,
+					result.timestamp,
+					result.name,
+					result.description,
+					result.threshold,
+					result.actualPrice,
+					result.reward
+			));
+		}
+		return taskIds;
+	}
+
 	public long[] loadTasks(JSONArray jsonArray) throws JSONException {
 		if (jsonArray == null)
 			throw new NullPointerException("jsonArray");
