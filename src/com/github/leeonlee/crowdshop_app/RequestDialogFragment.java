@@ -87,7 +87,8 @@ public abstract class RequestDialogFragment<
 	@Override
 	public final Dialog onCreateDialog(Bundle savedInstanceState) {
 		ProgressDialog dialog = new ProgressDialog(getActivity());
-		dialog.setMessage(getString(mTitleId));
+		dialog.setTitle(mTitleId);
+		dialog.setMessage(getString(R.string.back_to_cancel));
 		return dialog;
 	}
 
