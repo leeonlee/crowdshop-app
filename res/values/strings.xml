@@ -7,5 +7,10 @@
     <string name="requests">Requests</string>
     <string name="action_settings">Settings</string>
     <string name="details">Details</string>
+    <string name="no_username">Enter a username</string>
+    <string name="no_password">Enter a password</string>
+    <string name="authenticating">Authenticating...</string>
+    <string name="wrong_login">Invalid credentials</string>
+    <string name="login_error">Couldn\'t log in: %s</string>
 
 </resources>

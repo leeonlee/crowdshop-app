@@ -1,9 +1,10 @@
 package com.github.leeonlee.crowdshop_app;
 
-import android.app.ProgressDialog;
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.util.Pair;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -19,8 +20,6 @@ import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.UrlEncodedContent;
 import com.google.api.client.util.ObjectParser;
 import com.octo.android.robospice.persistence.exception.SpiceException;
-import com.octo.android.robospice.request.googlehttpclient.GoogleHttpClientSpiceRequest;
-import com.octo.android.robospice.request.listener.RequestListener;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -30,7 +29,6 @@ public class LoginActivity extends CrowdShopActivity {
 	EditText password;
 	TextView signIn;
 	Button login;
-	ProgressDialog pd;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -57,73 +55,41 @@ public class LoginActivity extends CrowdShopActivity {
 				String usernameString = username.getText().toString();
 				String passwordString = password.getText().toString();
 
-				int duration = Toast.LENGTH_SHORT;
-				if (usernameString.equals("")) {
-					Toast toast = Toast.makeText(LoginActivity.this, "Enter a username",
-							duration);
-					toast.show();
-				} else if (passwordString.equals("")) {
-					Toast toast = Toast.makeText(LoginActivity.this, "Enter a password",
-							duration);
-					toast.show();
+				final int duration = Toast.LENGTH_SHORT;
+				if (usernameString.isEmpty()) {
+					Toast.makeText(LoginActivity.this, R.string.no_username, duration).show();
+				} else if (passwordString.isEmpty()) {
+					Toast.makeText(LoginActivity.this, R.string.no_password, duration).show();
 				} else {
-					pd = new ProgressDialog(LoginActivity.this);
-					pd.setCancelable(true);
-					pd.setMessage("Authenticating..");
-					pd.show();
-					mSpiceManager.execute(new LoginRequest(usernameString, passwordString),
-							new RequestListener<LoginResult>() {
-
-								@Override
-								public void onRequestFailure(SpiceException spiceException) {
-									pd.dismiss();
-									Toast.makeText(LoginActivity.this,
-											"Couldn't log in: " + spiceException.getLocalizedMessage(),
-											Toast.LENGTH_LONG
-									).show();
-								}
-
-								@Override
-								public void onRequestSuccess(LoginResult loginResult) {
-									pd.dismiss();
-									if (loginResult.success != Success.success) {
-										Toast.makeText(LoginActivity.this,
-												"Invalid credentials",
-												Toast.LENGTH_LONG
-										).show();
-									}
-									else {
-										mApp.loadUser(loginResult.userInfoWithId.id,
-												loginResult.userInfoWithId.object
-										);
-										startActivity(new Intent(mApp, MainActivity.class));
-										finish();
-									}
-								}
-							});
+					LoginFragment.newInstance(usernameString, passwordString)
+							.show(getSupportFragmentManager(), "dialog");
 				}
 			}
 		});
 	}
 
-	private static class LoginRequest extends GoogleHttpClientSpiceRequest<LoginResult> {
+
+	private static final class LoginResult {
+
+		public Success success;
+		@JsonUnwrapped
+		public IdObject<UserInfo> userInfoWithId;
+
+	}
+
+	private static final class LoginRequest extends CrowdShopRequest<LoginResult, Pair<String, String>> {
 
 		private static final String URL = CrowdShopApplication.SERVER + "/loginview";
 
-		private final String mUsername;
-		private final String mPassword;
-
 		public LoginRequest(String username, String password) {
-			super(LoginResult.class);
-			mUsername = username;
-			mPassword = password;
+			super(LoginResult.class, Pair.create(username, password));
 		}
 
 		@Override
 		public LoginResult loadDataFromNetwork() throws Exception {
 			Map<String, String> body = new HashMap<String, String>();
-			body.put("username", mUsername);
-			body.put("password", mPassword);
+			body.put("username", cacheKey.first);
+			body.put("password", cacheKey.second);
 			HttpRequest httpRequest = getHttpRequestFactory().buildPostRequest(
 					new GenericUrl(URL),
 					new UrlEncodedContent(body)
@@ -135,11 +101,49 @@ public class LoginActivity extends CrowdShopActivity {
 
 	}
 
-	private static final class LoginResult {
+	public static final class LoginFragment extends RequestDialogFragment<LoginResult, LoginRequest> {
 
-		public Success success;
-		@JsonUnwrapped
-		public IdObject<UserInfo> userInfoWithId;
+		public static final String USERNAME = CrowdShopApplication.PACKAGE_NAME + ".USERNAME";
+		public static final String PASSWORD = CrowdShopApplication.PACKAGE_NAME + ".PASSWORD";
 
+		public LoginFragment() {
+			super(LoginResult.class, R.string.authenticating);
+		}
+
+		public static LoginFragment newInstance(String username, String password) {
+			LoginFragment fragment = new LoginFragment();
+			Bundle args = new Bundle(2);
+			args.putString(USERNAME, username);
+			args.putString(PASSWORD, password);
+			fragment.setArguments(args);
+			return fragment;
+		}
+
+		@Override
+		protected LoginRequest newRequest() {
+			Bundle args = getArguments();
+			return new LoginRequest(args.getString(USERNAME), args.getString(PASSWORD));
+		}
+
+		@Override
+		public void onRequestFailure(SpiceException spiceException) {
+			Toast.makeText(getActivity(),
+					getString(R.string.login_error, spiceException.getLocalizedMessage()),
+					Toast.LENGTH_LONG
+			).show();
+		}
+
+		@Override
+		public void onRequestSuccess(LoginResult loginResult) {
+			if (loginResult.success != Success.success) {
+				Toast.makeText(getActivity(), R.string.wrong_login, Toast.LENGTH_LONG).show();
+			} else {
+				mApp.loadUser(loginResult.userInfoWithId.id,
+						loginResult.userInfoWithId.object);
+				Activity activity = getActivity();
+				activity.startActivity(new Intent(activity, MainActivity.class));
+				activity.finish();
+			}
+		}
 	}
 }
