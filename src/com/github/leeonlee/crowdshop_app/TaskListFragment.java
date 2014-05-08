@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.util.Log;
+import android.util.Pair;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -17,7 +18,6 @@ import com.google.api.client.http.HttpRequest;
 import com.octo.android.robospice.Jackson2GoogleHttpClientSpiceService;
 import com.octo.android.robospice.SpiceManager;
 import com.octo.android.robospice.persistence.exception.SpiceException;
-import com.octo.android.robospice.request.googlehttpclient.GoogleHttpClientSpiceRequest;
 import com.octo.android.robospice.request.listener.RequestListener;
 
 /**
@@ -147,21 +147,17 @@ public abstract class TaskListFragment extends ListFragment {
 		public int reward;
 	}
 
-	private static class GetTasksRequest extends GoogleHttpClientSpiceRequest<GetTaskResult[]> {
-
-		private final String mKind;
-		private final String mUsername;
+	private static class GetTasksRequest extends CrowdShopRequest<GetTaskResult[], Pair<String, String>> {
 
 		public GetTasksRequest(String kind, String username) {
-			super(GetTaskResult[].class);
-			mKind = kind;
-			mUsername = username;
+			super(GetTaskResult[].class, Pair.create(kind, username));
 		}
 
 		@Override
 		public GetTaskResult[] loadDataFromNetwork() throws Exception {
 			HttpRequest httpRequest = getHttpRequestFactory().buildGetRequest(
-					new GenericUrl(CrowdShopApplication.SERVER + '/' + mKind + "tasks/" + mUsername)
+					new GenericUrl(CrowdShopApplication.SERVER + '/' + cacheKey.first
+							+ "tasks/" + cacheKey.second)
 			);
 			httpRequest.setParser(new ObjectMapperParser());
 			return httpRequest.execute().parseAs(getResultType());
