@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
+import android.util.Log;
 import com.octo.android.robospice.Jackson2GoogleHttpClientSpiceService;
 import com.octo.android.robospice.SpiceManager;
 import com.octo.android.robospice.exception.RequestCancelledException;
@@ -23,12 +24,11 @@ public abstract class RequestDialogFragment<
 
 	protected CrowdShopApplication mApp;
 
-	private static final String WAS_IN_PROGRESS = CrowdShopApplication.PACKAGE_NAME + ".WAS_IN_PROGRESS";
+	private static final String TAG = RequestDialogFragment.class.getSimpleName();
 	private final SpiceManager mSpiceManager = new SpiceManager(Jackson2GoogleHttpClientSpiceService.class);
 	private final Class<Result> mResultClass;
 	private Request mRequest;
 	private final int mTitleId;
-	private boolean mWasInProgress;
 
 	protected RequestDialogFragment(Class<Result> resultClass, int titleId) {
 		super();
@@ -41,16 +41,17 @@ public abstract class RequestDialogFragment<
 		super.onCreate(savedInstanceState);
 		mApp = (CrowdShopApplication)getActivity().getApplication();
 		mRequest = newRequest();
-		mWasInProgress = savedInstanceState != null && savedInstanceState.getBoolean(WAS_IN_PROGRESS);
 	}
 
 	@Override
 	public final void onStart() {
 		super.onStart();
 		mSpiceManager.start(getActivity());
-		PendingRequestListener<Result> listener = new PendingRequestListener<Result>() {
+		final PendingRequestListener<Result> listener = new PendingRequestListener<Result>() {
 			@Override
 			public void onRequestNotFound() {
+				Log.d(TAG, "Couldn't find request");
+				mSpiceManager.execute(mRequest, mRequest.cacheKey, DurationInMillis.ALWAYS_EXPIRED, this);
 			}
 
 			@Override
@@ -66,22 +67,13 @@ public abstract class RequestDialogFragment<
 				RequestDialogFragment.this.onRequestSuccess(result);
 			}
 		};
-		if (mWasInProgress)
-			mSpiceManager.addListenerIfPending(mResultClass, mRequest.cacheKey, listener);
-		else
-			mSpiceManager.execute(mRequest, mRequest.cacheKey, DurationInMillis.ALWAYS_RETURNED, listener);
+		mSpiceManager.addListenerIfPending(mResultClass, mRequest.cacheKey, listener);
 	}
 
 	@Override
 	public final void onStop() {
 		super.onStop();
 		mSpiceManager.shouldStop();
-	}
-
-	@Override
-	public final void onSaveInstanceState(Bundle outState) {
-		super.onSaveInstanceState(outState);
-		outState.putBoolean(WAS_IN_PROGRESS, true);
 	}
 
 	@Override
