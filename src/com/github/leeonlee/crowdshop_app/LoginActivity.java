@@ -68,8 +68,7 @@ public class LoginActivity extends CrowdShopActivity {
 		});
 	}
 
-
-	private static final class LoginResult {
+	public static final class LoginResult {
 
 		public Success success;
 		@JsonUnwrapped
