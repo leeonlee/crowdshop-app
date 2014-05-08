@@ -13,5 +13,14 @@
     <string name="authenticating">Authenticating...</string>
     <string name="wrong_login">Invalid credentials</string>
     <string name="login_error">Couldn\'t log in: %s</string>
+    <string name="empty_title">Please tell us what you need!</string>
+    <string name="empty_budget">Please enter a budget!</string>
+    <string name="empty_reward">Please enter a reward!</string>
+    <string name="bad_budget">Budget can be at most $%d</string>
+    <string name="bad_reward">Budget can be at most $%d</string>
+    <string name="submitting">Submitting...</string>
+    <string name="submit_ok">Submission complete!</string>
+    <string name="submit_error">Submission error: %s</string>
+    <string name="submit_unknown">Unknown submission error; try resubmitting</string>
 
 </resources>
