@@ -17,8 +17,9 @@ import com.google.api.client.http.GenericUrl;
 import com.google.api.client.http.HttpRequest;
 import com.octo.android.robospice.Jackson2GoogleHttpClientSpiceService;
 import com.octo.android.robospice.SpiceManager;
+import com.octo.android.robospice.persistence.DurationInMillis;
 import com.octo.android.robospice.persistence.exception.SpiceException;
-import com.octo.android.robospice.request.listener.RequestListener;
+import com.octo.android.robospice.request.listener.PendingRequestListener;
 
 /**
  * A fragment containing a list of tasks.
@@ -106,8 +107,9 @@ public abstract class TaskListFragment extends ListFragment {
 		setListAdapter(null);
 		if (getView() != null)
 			setListShown(false);
-		mSpiceManager.execute(new GetTasksRequest(mTaskKind, mApp.getUsername()),
-				new RequestListener<GetTaskResult[]>() {
+		final GetTasksRequest request = new GetTasksRequest(mTaskKind, mApp.getUsername());
+		mSpiceManager.addListenerIfPending(GetTaskResult[].class, request.cacheKey,
+				new PendingRequestListener<GetTaskResult[]>() {
 
 					@Override
 					public void onRequestFailure(SpiceException spiceException) {
@@ -123,6 +125,12 @@ public abstract class TaskListFragment extends ListFragment {
 						setListAdapter(mAdapter);
 						if (getView() != null)
 							setListShown(true);
+					}
+
+					@Override
+					public void onRequestNotFound() {
+						Log.d(TAG, request.cacheKey + " request not found");
+						mSpiceManager.execute(request, request.cacheKey, DurationInMillis.ALWAYS_EXPIRED, this);
 					}
 				}
 		);
