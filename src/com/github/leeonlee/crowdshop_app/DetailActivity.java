@@ -2,7 +2,6 @@ package com.github.leeonlee.crowdshop_app;
 
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.util.Pair;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -10,16 +9,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 import com.github.leeonlee.crowdshop_app.json.JustSuccess;
 import com.github.leeonlee.crowdshop_app.models.TaskInfo;
-import com.github.leeonlee.crowdshop_app.requests.CrowdShopRequest;
-import com.google.api.client.http.GenericUrl;
-import com.google.api.client.http.HttpRequest;
-import com.google.api.client.http.HttpRequestFactory;
-import com.google.api.client.http.UrlEncodedContent;
+import com.github.leeonlee.crowdshop_app.requests.CrowdShopPostRequest;
+import com.google.api.client.util.Key;
 import com.octo.android.robospice.persistence.exception.SpiceException;
-
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 public class DetailActivity extends CrowdShopActivity {
 	private TextView titleLabel, title, budgetLabel, budgetTextView,
@@ -75,27 +67,40 @@ public class DetailActivity extends CrowdShopActivity {
 		reward.setText("$" + Integer.toString(info.reward));
 	}
 
-	private static final class Request extends CrowdShopRequest<JustSuccess, Pair<String, Long>> {
+	public static final class Parameters {
+		@Key
+		public final String username;
+		@Key("task_id")
+		public final long taskId;
 
-		private static final String URL = CrowdShopApplication.SERVER + "/claimtask";
-
-		public Request(String username, long taskId) {
-			super(JustSuccess.class, Pair.create(username, taskId));
+		public Parameters(String username, long taskId) {
+			this.username = username;
+			this.taskId = taskId;
 		}
 
 		@Override
-		protected HttpRequest getRequest(HttpRequestFactory factory) throws IOException {
-			Map<String, Object> body = new HashMap<String, Object>();
-			body.put("username", cacheKey.first);
-			body.put("task_id", cacheKey.second);
-			return factory.buildPostRequest(
-					new GenericUrl(URL),
-					new UrlEncodedContent(body)
-			);
+		public boolean equals(Object o) {
+			if (this == o) return true;
+			if (o == null || getClass() != o.getClass()) return false;
+
+			Parameters that = (Parameters) o;
+
+			if (taskId != that.taskId) return false;
+			if (username != null ? !username.equals(that.username) : that.username != null) return false;
+
+			return true;
+		}
+
+		@Override
+		public int hashCode() {
+			int result = username != null ? username.hashCode() : 0;
+			result = 31 * result + (int) (taskId ^ (taskId >>> 32));
+			return result;
 		}
 	}
 
-	private static final class MyFragment extends RequestDialogFragment<Void, JustSuccess, Request> {
+	private static final class MyFragment
+			extends RequestDialogFragment<Void, JustSuccess, CrowdShopPostRequest<Parameters, JustSuccess>> {
 
 		private static final String USERNAME = CrowdShopApplication.PACKAGE_NAME + ".USERNAME";
 		private static final String TASK_ID = CrowdShopApplication.PACKAGE_NAME + ".TASK_ID";
@@ -114,9 +119,10 @@ public class DetailActivity extends CrowdShopActivity {
 		}
 
 		@Override
-		protected Request newRequest() {
+		protected CrowdShopPostRequest<Parameters, JustSuccess> newRequest() {
 			Bundle args = getArguments();
-			return new Request(args.getString(USERNAME), args.getLong(TASK_ID));
+			Parameters params = new Parameters(args.getString(USERNAME), args.getLong(TASK_ID));
+			return CrowdShopPostRequest.make(JustSuccess.class, params, "claimtask");
 		}
 
 		@Override

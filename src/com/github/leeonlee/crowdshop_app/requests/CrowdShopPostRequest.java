@@ -12,7 +12,7 @@ import java.io.IOException;
  * A POST request to the CrowdShop server.
  * The CacheKey should be JSON-serializable.
  */
-public final class CrowdShopPostRequest<Result, CacheKey> extends CrowdShopRequest<Result, CacheKey> {
+public final class CrowdShopPostRequest<CacheKey, Result> extends CrowdShopRequest<CacheKey, Result> {
 
 	public final String endpointString;
 
@@ -21,9 +21,9 @@ public final class CrowdShopPostRequest<Result, CacheKey> extends CrowdShopReque
 		this.endpointString = endpointString;
 	}
 
-	public static <Result, CacheKey> CrowdShopPostRequest<Result, CacheKey> make
+	public static <Result, CacheKey> CrowdShopPostRequest<CacheKey, Result> make
 			(Class<Result> clazz, CacheKey cacheKey, String endpointString) {
-		return new CrowdShopPostRequest<Result, CacheKey>(clazz, cacheKey, endpointString);
+		return new CrowdShopPostRequest<CacheKey, Result>(clazz, cacheKey, endpointString);
 	}
 
 	@Override

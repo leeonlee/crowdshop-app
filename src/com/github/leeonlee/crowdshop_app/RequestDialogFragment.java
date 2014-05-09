@@ -22,7 +22,7 @@ import com.octo.android.robospice.request.listener.PendingRequestListener;
 public abstract class RequestDialogFragment<
 		Payload,
 		Result extends PostResult<Payload>,
-		Request extends CrowdShopRequest<Result, ?>
+		Request extends CrowdShopRequest<?, Result>
 		> extends DialogFragment {
 
 	protected CrowdShopApplication mApp;

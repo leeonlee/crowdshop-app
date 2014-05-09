@@ -145,7 +145,7 @@ public class TaskActivity extends CrowdShopActivity {
 		}
 	}
 
-	private static final class Request extends CrowdShopRequest<JustSuccess, Parameters> {
+	private static final class Request extends CrowdShopRequest<Parameters, JustSuccess> {
 
 		private static final String URL = CrowdShopApplication.SERVER + "/createtask";
 

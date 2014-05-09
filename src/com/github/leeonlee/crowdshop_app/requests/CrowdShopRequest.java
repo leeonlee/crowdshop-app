@@ -11,7 +11,7 @@ import java.io.IOException;
  * Represents a request in this app.
  * CacheKey should be an immutable class.
  */
-public abstract class CrowdShopRequest<Result, CacheKey> extends GoogleHttpClientSpiceRequest<Result> {
+public abstract class CrowdShopRequest<CacheKey, Result> extends GoogleHttpClientSpiceRequest<Result> {
 
 	public final CacheKey cacheKey;
 

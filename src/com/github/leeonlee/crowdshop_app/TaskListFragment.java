@@ -159,7 +159,7 @@ public abstract class TaskListFragment extends ListFragment {
 		public int reward;
 	}
 
-	private static class Request extends CrowdShopRequest<Result[], Pair<String, String>> {
+	private static class Request extends CrowdShopRequest<Pair<String, String>, Result[]> {
 
 		public Request(String kind, String username) {
 			super(Result[].class, Pair.create(kind, username));

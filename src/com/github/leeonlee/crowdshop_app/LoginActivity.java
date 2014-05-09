@@ -99,7 +99,7 @@ public class LoginActivity extends CrowdShopActivity {
 
 	public static final class MyFragment
 			extends RequestDialogFragment<
-			IdObject<UserInfo>, Result, CrowdShopPostRequest<Result, Parameters>> {
+			IdObject<UserInfo>, Result, CrowdShopPostRequest<Parameters, Result>> {
 
 		public static final String USERNAME = CrowdShopApplication.PACKAGE_NAME + ".USERNAME";
 		public static final String PASSWORD = CrowdShopApplication.PACKAGE_NAME + ".PASSWORD";
@@ -118,7 +118,7 @@ public class LoginActivity extends CrowdShopActivity {
 		}
 
 		@Override
-		protected CrowdShopPostRequest<Result, Parameters> newRequest() {
+		protected CrowdShopPostRequest<Parameters, Result> newRequest() {
 			Bundle args = getArguments();
 			Parameters params = new Parameters(args.getString(USERNAME), args.getString(PASSWORD));
 			return CrowdShopPostRequest.make(Result.class, params, "loginview");
