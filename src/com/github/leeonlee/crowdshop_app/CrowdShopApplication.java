@@ -47,13 +47,13 @@ public class CrowdShopApplication extends Application {
 		mUsers.put(id, userInfo);
 	}
 
-	public long[] loadTasks(TaskListFragment.GetTaskResult[] results) {
+	public long[] loadTasks(TaskListFragment.Result[] results) {
 		if (results == null)
 			throw new NullPointerException("results");
 
 		long[] taskIds = new long[results.length];
 		for (int i = 0; i < taskIds.length; ++i) {
-			TaskListFragment.GetTaskResult result = results[i];
+			TaskListFragment.Result result = results[i];
 
 			taskIds[i] = result.id;
 

@@ -95,13 +95,13 @@ public class TaskActivity extends CrowdShopActivity {
 					return;
 				}
 
-				CreateTaskFragment.newInstance(username, titleString, descString, budgetInt, rewardInt)
+				MyFragment.newInstance(username, titleString, descString, budgetInt, rewardInt)
 						.show(getSupportFragmentManager(), "dialog");
 			}
 		});
 	}
 
-	private static final class CreateTaskParameters {
+	private static final class Parameters {
 
 		public final String username;
 		public final String title;
@@ -109,7 +109,7 @@ public class TaskActivity extends CrowdShopActivity {
 		public final int budget;
 		public final int reward;
 
-		public CreateTaskParameters(String username, String title, String description, int budget, int reward) {
+		public Parameters(String username, String title, String description, int budget, int reward) {
 			this.username = username;
 			this.title = title;
 			this.description = description;
@@ -122,7 +122,7 @@ public class TaskActivity extends CrowdShopActivity {
 			if (this == o) return true;
 			if (o == null || getClass() != o.getClass()) return false;
 
-			CreateTaskParameters that = (CreateTaskParameters) o;
+			Parameters that = (Parameters) o;
 
 			if (budget != that.budget) return false;
 			if (reward != that.reward) return false;
@@ -144,12 +144,12 @@ public class TaskActivity extends CrowdShopActivity {
 		}
 	}
 
-	private static final class CreateTaskRequest extends CrowdShopRequest<JustSuccess, CreateTaskParameters> {
+	private static final class Request extends CrowdShopRequest<JustSuccess, Parameters> {
 
 		private static final String URL = CrowdShopApplication.SERVER + "/createtask";
 
-		public CreateTaskRequest(String username, String title, String description, int budget, int reward) {
-			super(JustSuccess.class, new CreateTaskParameters(username, title, description, budget, reward));
+		public Request(String username, String title, String description, int budget, int reward) {
+			super(JustSuccess.class, new Parameters(username, title, description, budget, reward));
 		}
 
 		@Override
@@ -168,7 +168,7 @@ public class TaskActivity extends CrowdShopActivity {
 
 	}
 
-	private static final class CreateTaskFragment extends RequestDialogFragment<Void, JustSuccess, CreateTaskRequest> {
+	private static final class MyFragment extends RequestDialogFragment<Void, JustSuccess, Request> {
 
 		private static final String USERNAME = CrowdShopApplication.PACKAGE_NAME + ".USERNAME";
 		private static final String TITLE = CrowdShopApplication.PACKAGE_NAME + ".TITLE";
@@ -176,13 +176,13 @@ public class TaskActivity extends CrowdShopActivity {
 		private static final String BUDGET = CrowdShopApplication.PACKAGE_NAME + ".BUDGET";
 		private static final String REWARD = CrowdShopApplication.PACKAGE_NAME + ".REWARD";
 
-		public CreateTaskFragment() {
+		public MyFragment() {
 			super(JustSuccess.class, R.string.submitting);
 		}
 
-		public static CreateTaskFragment newInstance(String username, String title, String description,
+		public static MyFragment newInstance(String username, String title, String description,
 		                                             int budget, int reward) {
-			CreateTaskFragment fragment = new CreateTaskFragment();
+			MyFragment fragment = new MyFragment();
 			Bundle args = new Bundle(5);
 			args.putString(USERNAME, username);
 			args.putString(TITLE, title);
@@ -194,9 +194,9 @@ public class TaskActivity extends CrowdShopActivity {
 		}
 
 		@Override
-		protected CreateTaskRequest newRequest() {
+		protected Request newRequest() {
 			Bundle args = getArguments();
-			return new CreateTaskRequest(args.getString(USERNAME), args.getString(TITLE), args.getString(DESCRIPTION),
+			return new Request(args.getString(USERNAME), args.getString(TITLE), args.getString(DESCRIPTION),
 					args.getInt(BUDGET), args.getInt(REWARD));
 		}
 

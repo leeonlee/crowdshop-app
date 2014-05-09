@@ -61,23 +61,23 @@ public class LoginActivity extends CrowdShopActivity {
 				} else if (passwordString.isEmpty()) {
 					Toast.makeText(LoginActivity.this, R.string.no_password, duration).show();
 				} else {
-					LoginFragment.newInstance(usernameString, passwordString)
+					MyFragment.newInstance(usernameString, passwordString)
 							.show(getSupportFragmentManager(), "dialog");
 				}
 			}
 		});
 	}
 
-	public static final class LoginResult extends PostResult<IdObject<UserInfo>> {
+	public static final class Result extends PostResult<IdObject<UserInfo>> {
 	}
 
-	private static final class LoginRequest
-			extends CrowdShopRequest<LoginResult, Pair<String, String>> {
+	private static final class Request
+			extends CrowdShopRequest<Result, Pair<String, String>> {
 
 		private static final String URL = CrowdShopApplication.SERVER + "/loginview";
 
-		public LoginRequest(String username, String password) {
-			super(LoginResult.class, Pair.create(username, password));
+		public Request(String username, String password) {
+			super(Result.class, Pair.create(username, password));
 		}
 
 		@Override
@@ -93,18 +93,18 @@ public class LoginActivity extends CrowdShopActivity {
 
 	}
 
-	public static final class LoginFragment
-			extends RequestDialogFragment<IdObject<UserInfo>, LoginResult, LoginRequest> {
+	public static final class MyFragment
+			extends RequestDialogFragment<IdObject<UserInfo>, Result, Request> {
 
 		public static final String USERNAME = CrowdShopApplication.PACKAGE_NAME + ".USERNAME";
 		public static final String PASSWORD = CrowdShopApplication.PACKAGE_NAME + ".PASSWORD";
 
-		public LoginFragment() {
-			super(LoginResult.class, R.string.authenticating);
+		public MyFragment() {
+			super(Result.class, R.string.authenticating);
 		}
 
-		public static LoginFragment newInstance(String username, String password) {
-			LoginFragment fragment = new LoginFragment();
+		public static MyFragment newInstance(String username, String password) {
+			MyFragment fragment = new MyFragment();
 			Bundle args = new Bundle(2);
 			args.putString(USERNAME, username);
 			args.putString(PASSWORD, password);
@@ -113,9 +113,9 @@ public class LoginActivity extends CrowdShopActivity {
 		}
 
 		@Override
-		protected LoginRequest newRequest() {
+		protected Request newRequest() {
 			Bundle args = getArguments();
-			return new LoginRequest(args.getString(USERNAME), args.getString(PASSWORD));
+			return new Request(args.getString(USERNAME), args.getString(PASSWORD));
 		}
 
 		@Override

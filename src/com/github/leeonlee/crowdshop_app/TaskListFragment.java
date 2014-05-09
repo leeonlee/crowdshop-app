@@ -110,9 +110,9 @@ public abstract class TaskListFragment extends ListFragment {
 		setListAdapter(null);
 		if (getView() != null)
 			setListShown(false);
-		final GetTasksRequest request = new GetTasksRequest(mTaskKind, mApp.getUsername());
-		mSpiceManager.addListenerIfPending(GetTaskResult[].class, request.cacheKey,
-				new PendingRequestListener<GetTaskResult[]>() {
+		final Request request = new Request(mTaskKind, mApp.getUsername());
+		mSpiceManager.addListenerIfPending(Result[].class, request.cacheKey,
+				new PendingRequestListener<Result[]>() {
 
 					@Override
 					public void onRequestFailure(SpiceException spiceException) {
@@ -123,8 +123,8 @@ public abstract class TaskListFragment extends ListFragment {
 					}
 
 					@Override
-					public void onRequestSuccess(GetTaskResult[] getTaskResults) {
-						mAdapter.setTaskIdsAndNotify(mApp.loadTasks(getTaskResults));
+					public void onRequestSuccess(Result[] results) {
+						mAdapter.setTaskIdsAndNotify(mApp.loadTasks(results));
 						setListAdapter(mAdapter);
 						if (getView() != null)
 							setListShown(true);
@@ -140,7 +140,7 @@ public abstract class TaskListFragment extends ListFragment {
 	}
 
 	@JsonIgnoreProperties(ignoreUnknown = true)
-	public static class GetTaskResult {
+	public static class Result {
 		public long id;
 		@JsonProperty("owner")
 		public IdObject<UserInfo> creator;
@@ -158,10 +158,10 @@ public abstract class TaskListFragment extends ListFragment {
 		public int reward;
 	}
 
-	private static class GetTasksRequest extends CrowdShopRequest<GetTaskResult[], Pair<String, String>> {
+	private static class Request extends CrowdShopRequest<Result[], Pair<String, String>> {
 
-		public GetTasksRequest(String kind, String username) {
-			super(GetTaskResult[].class, Pair.create(kind, username));
+		public Request(String kind, String username) {
+			super(Result[].class, Pair.create(kind, username));
 		}
 
 		@Override
