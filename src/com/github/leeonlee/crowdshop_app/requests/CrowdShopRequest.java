@@ -1,5 +1,6 @@
-package com.github.leeonlee.crowdshop_app;
+package com.github.leeonlee.crowdshop_app.requests;
 
+import com.github.leeonlee.crowdshop_app.json.ObjectMapperParser;
 import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpRequestFactory;
 import com.octo.android.robospice.request.googlehttpclient.GoogleHttpClientSpiceRequest;

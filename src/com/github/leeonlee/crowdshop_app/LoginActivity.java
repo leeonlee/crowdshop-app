@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.util.Pair;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -14,15 +13,9 @@ import android.widget.Toast;
 import com.github.leeonlee.crowdshop_app.json.IdObject;
 import com.github.leeonlee.crowdshop_app.json.PostResult;
 import com.github.leeonlee.crowdshop_app.models.UserInfo;
-import com.google.api.client.http.GenericUrl;
-import com.google.api.client.http.HttpRequest;
-import com.google.api.client.http.HttpRequestFactory;
-import com.google.api.client.http.UrlEncodedContent;
+import com.github.leeonlee.crowdshop_app.requests.CrowdShopPostRequest;
+import com.google.api.client.util.Key;
 import com.octo.android.robospice.persistence.exception.SpiceException;
-
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 public class LoginActivity extends CrowdShopActivity {
 	EditText username;
@@ -68,33 +61,45 @@ public class LoginActivity extends CrowdShopActivity {
 		});
 	}
 
-	public static final class Result extends PostResult<IdObject<UserInfo>> {
-	}
+	public static final class Parameters {
 
-	private static final class Request
-			extends CrowdShopRequest<Result, Pair<String, String>> {
+		@Key
+		public final String username;
+		@Key
+		public final String password;
 
-		private static final String URL = CrowdShopApplication.SERVER + "/loginview";
-
-		public Request(String username, String password) {
-			super(Result.class, Pair.create(username, password));
+		public Parameters(String username, String password) {
+			this.username = username;
+			this.password = password;
 		}
 
 		@Override
-		protected HttpRequest getRequest(HttpRequestFactory factory) throws IOException {
-			Map<String, String> body = new HashMap<String, String>();
-			body.put("username", cacheKey.first);
-			body.put("password", cacheKey.second);
-			return factory.buildPostRequest(
-					new GenericUrl(URL),
-					new UrlEncodedContent(body)
-			);
+		public boolean equals(Object o) {
+			if (this == o) return true;
+			if (o == null || getClass() != o.getClass()) return false;
+
+			Parameters that = (Parameters) o;
+
+			if (password != null ? !password.equals(that.password) : that.password != null) return false;
+			if (username != null ? !username.equals(that.username) : that.username != null) return false;
+
+			return true;
 		}
 
+		@Override
+		public int hashCode() {
+			int result = username != null ? username.hashCode() : 0;
+			result = 31 * result + (password != null ? password.hashCode() : 0);
+			return result;
+		}
+	}
+
+	public static final class Result extends PostResult<IdObject<UserInfo>> {
 	}
 
 	public static final class MyFragment
-			extends RequestDialogFragment<IdObject<UserInfo>, Result, Request> {
+			extends RequestDialogFragment<
+			IdObject<UserInfo>, Result, CrowdShopPostRequest<Result, Parameters>> {
 
 		public static final String USERNAME = CrowdShopApplication.PACKAGE_NAME + ".USERNAME";
 		public static final String PASSWORD = CrowdShopApplication.PACKAGE_NAME + ".PASSWORD";
@@ -113,9 +118,10 @@ public class LoginActivity extends CrowdShopActivity {
 		}
 
 		@Override
-		protected Request newRequest() {
+		protected CrowdShopPostRequest<Result, Parameters> newRequest() {
 			Bundle args = getArguments();
-			return new Request(args.getString(USERNAME), args.getString(PASSWORD));
+			Parameters params = new Parameters(args.getString(USERNAME), args.getString(PASSWORD));
+			return CrowdShopPostRequest.make(Result.class, params, "loginview");
 		}
 
 		@Override

@@ -13,6 +13,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.leeonlee.crowdshop_app.json.IdObject;
 import com.github.leeonlee.crowdshop_app.models.UserInfo;
+import com.github.leeonlee.crowdshop_app.requests.CrowdShopRequest;
 import com.google.api.client.http.GenericUrl;
 import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpRequestFactory;

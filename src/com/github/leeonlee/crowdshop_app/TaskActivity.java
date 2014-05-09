@@ -11,6 +11,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.github.leeonlee.crowdshop_app.json.JustSuccess;
+import com.github.leeonlee.crowdshop_app.requests.CrowdShopRequest;
 import com.google.api.client.http.GenericUrl;
 import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpRequestFactory;

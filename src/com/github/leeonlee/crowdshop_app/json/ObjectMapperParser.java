@@ -1,4 +1,4 @@
-package com.github.leeonlee.crowdshop_app;
+package com.github.leeonlee.crowdshop_app.json;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.api.client.util.ObjectParser;
@@ -10,9 +10,9 @@ import java.lang.reflect.Type;
 import java.nio.charset.Charset;
 
 /**
-* Created by ten-young on 4/22/14.
+* ObjectParser that uses an ObjectMapper.
 */
-class ObjectMapperParser implements ObjectParser {
+public class ObjectMapperParser implements ObjectParser {
 
 	private final ObjectMapper objectMapper;
 
