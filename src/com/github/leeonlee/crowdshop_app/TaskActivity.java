@@ -10,8 +10,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.github.leeonlee.crowdshop_app.models.Success;
+import com.github.leeonlee.crowdshop_app.json.JustSuccess;
 import com.google.api.client.http.GenericUrl;
 import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpRequestFactory;
@@ -145,17 +144,12 @@ public class TaskActivity extends CrowdShopActivity {
 		}
 	}
 
-	@JsonIgnoreProperties(ignoreUnknown = true)
-	public static final class CreateTaskResult {
-		public Success success;
-	}
-
-	private static final class CreateTaskRequest extends CrowdShopRequest<CreateTaskResult, CreateTaskParameters> {
+	private static final class CreateTaskRequest extends CrowdShopRequest<JustSuccess, CreateTaskParameters> {
 
 		private static final String URL = CrowdShopApplication.SERVER + "/createtask";
 
 		public CreateTaskRequest(String username, String title, String description, int budget, int reward) {
-			super(CreateTaskResult.class, new CreateTaskParameters(username, title, description, budget, reward));
+			super(JustSuccess.class, new CreateTaskParameters(username, title, description, budget, reward));
 		}
 
 		@Override
@@ -174,7 +168,7 @@ public class TaskActivity extends CrowdShopActivity {
 
 	}
 
-	private static final class CreateTaskFragment extends RequestDialogFragment<CreateTaskResult, CreateTaskRequest> {
+	private static final class CreateTaskFragment extends RequestDialogFragment<Void, JustSuccess, CreateTaskRequest> {
 
 		private static final String USERNAME = CrowdShopApplication.PACKAGE_NAME + ".USERNAME";
 		private static final String TITLE = CrowdShopApplication.PACKAGE_NAME + ".TITLE";
@@ -183,7 +177,7 @@ public class TaskActivity extends CrowdShopActivity {
 		private static final String REWARD = CrowdShopApplication.PACKAGE_NAME + ".REWARD";
 
 		public CreateTaskFragment() {
-			super(CreateTaskResult.class, R.string.submitting);
+			super(JustSuccess.class, R.string.submitting);
 		}
 
 		public static CreateTaskFragment newInstance(String username, String title, String description,
@@ -215,16 +209,17 @@ public class TaskActivity extends CrowdShopActivity {
 		}
 
 		@Override
-		protected void onRequestSuccess(CreateTaskResult createTaskResult) {
-			if (createTaskResult.success != Success.success) {
-				Toast.makeText(getActivity(), R.string.submit_unknown, Toast.LENGTH_LONG).show();
-			} else {
-				Activity activity = getActivity();
-				Toast.makeText(activity, R.string.submit_ok, Toast.LENGTH_SHORT).show();
-				activity.finish();
-			}
-
+		protected void onRequestSuccess(Void aVoid) {
+			Activity activity = getActivity();
+			Toast.makeText(activity, R.string.submit_ok, Toast.LENGTH_SHORT).show();
+			activity.finish();
 		}
+
+		@Override
+		protected void onRequestInvalid() {
+			Toast.makeText(getActivity(), R.string.submit_unknown, Toast.LENGTH_LONG).show();
+		}
+
 	}
 
 }

@@ -11,9 +11,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-import com.fasterxml.jackson.annotation.JsonUnwrapped;
-import com.github.leeonlee.crowdshop_app.models.IdObject;
-import com.github.leeonlee.crowdshop_app.models.Success;
+import com.github.leeonlee.crowdshop_app.json.IdObject;
+import com.github.leeonlee.crowdshop_app.json.PostResult;
 import com.github.leeonlee.crowdshop_app.models.UserInfo;
 import com.google.api.client.http.GenericUrl;
 import com.google.api.client.http.HttpRequest;
@@ -69,15 +68,11 @@ public class LoginActivity extends CrowdShopActivity {
 		});
 	}
 
-	public static final class LoginResult {
-
-		public Success success;
-		@JsonUnwrapped
-		public IdObject<UserInfo> userInfoWithId;
-
+	public static final class LoginResult extends PostResult<IdObject<UserInfo>> {
 	}
 
-	private static final class LoginRequest extends CrowdShopRequest<LoginResult, Pair<String, String>> {
+	private static final class LoginRequest
+			extends CrowdShopRequest<LoginResult, Pair<String, String>> {
 
 		private static final String URL = CrowdShopApplication.SERVER + "/loginview";
 
@@ -98,7 +93,8 @@ public class LoginActivity extends CrowdShopActivity {
 
 	}
 
-	public static final class LoginFragment extends RequestDialogFragment<LoginResult, LoginRequest> {
+	public static final class LoginFragment
+			extends RequestDialogFragment<IdObject<UserInfo>, LoginResult, LoginRequest> {
 
 		public static final String USERNAME = CrowdShopApplication.PACKAGE_NAME + ".USERNAME";
 		public static final String PASSWORD = CrowdShopApplication.PACKAGE_NAME + ".PASSWORD";
@@ -131,16 +127,17 @@ public class LoginActivity extends CrowdShopActivity {
 		}
 
 		@Override
-		public void onRequestSuccess(LoginResult loginResult) {
-			if (loginResult.success != Success.success) {
-				Toast.makeText(getActivity(), R.string.wrong_login, Toast.LENGTH_LONG).show();
-			} else {
-				mApp.loadUser(loginResult.userInfoWithId.id,
-						loginResult.userInfoWithId.object);
-				Activity activity = getActivity();
-				activity.startActivity(new Intent(activity, MainActivity.class));
-				activity.finish();
-			}
+		protected void onRequestInvalid() {
+			Toast.makeText(getActivity(), R.string.wrong_login, Toast.LENGTH_LONG).show();
 		}
+
+		@Override
+		protected void onRequestSuccess(IdObject<UserInfo> userInfoIdObject) {
+			mApp.loadUser(userInfoIdObject.id, userInfoIdObject.object);
+			Activity activity = getActivity();
+			activity.startActivity(new Intent(activity, MainActivity.class));
+			activity.finish();
+		}
+
 	}
 }

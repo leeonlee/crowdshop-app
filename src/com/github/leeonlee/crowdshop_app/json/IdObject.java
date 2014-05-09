@@ -1,4 +1,4 @@
-package com.github.leeonlee.crowdshop_app.models;
+package com.github.leeonlee.crowdshop_app.json;
 
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 

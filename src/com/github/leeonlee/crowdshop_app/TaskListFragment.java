@@ -11,7 +11,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.github.leeonlee.crowdshop_app.models.IdObject;
+import com.github.leeonlee.crowdshop_app.json.IdObject;
 import com.github.leeonlee.crowdshop_app.models.UserInfo;
 import com.google.api.client.http.GenericUrl;
 import com.google.api.client.http.HttpRequest;

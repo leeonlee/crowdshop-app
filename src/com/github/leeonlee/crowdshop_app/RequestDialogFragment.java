@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.util.Log;
+import com.github.leeonlee.crowdshop_app.json.PostResult;
 import com.octo.android.robospice.Jackson2GoogleHttpClientSpiceService;
 import com.octo.android.robospice.SpiceManager;
 import com.octo.android.robospice.exception.RequestCancelledException;
@@ -18,7 +19,8 @@ import com.octo.android.robospice.request.listener.PendingRequestListener;
  * for a request.
  */
 public abstract class RequestDialogFragment<
-		Result,
+		Payload,
+		Result extends PostResult<Payload>,
 		Request extends CrowdShopRequest<Result, ?>
 		> extends DialogFragment {
 
@@ -47,7 +49,8 @@ public abstract class RequestDialogFragment<
 	public final void onStart() {
 		super.onStart();
 		mSpiceManager.start(getActivity());
-		final PendingRequestListener<Result> listener = new PendingRequestListener<Result>() {
+		final PendingRequestListener<Result> listener =
+				new PendingRequestListener<Result>() {
 			@Override
 			public void onRequestNotFound() {
 				Log.d(TAG, "Couldn't find request");
@@ -64,7 +67,10 @@ public abstract class RequestDialogFragment<
 			@Override
 			public void onRequestSuccess(Result result) {
 				dismiss();
-				RequestDialogFragment.this.onRequestSuccess(result);
+				if (result.success == PostResult.Success.success)
+					RequestDialogFragment.this.onRequestSuccess(result.payload);
+				else
+					RequestDialogFragment.this.onRequestInvalid();
 			}
 		};
 		mSpiceManager.addListenerIfPending(mResultClass, mRequest.cacheKey, listener);
@@ -92,6 +98,7 @@ public abstract class RequestDialogFragment<
 
 	protected abstract Request newRequest();
 	protected abstract void onRequestFailure(SpiceException spiceException);
-	protected abstract void onRequestSuccess(Result result);
+	protected abstract void onRequestSuccess(Payload payload);
+	protected abstract void onRequestInvalid();
 
 }
