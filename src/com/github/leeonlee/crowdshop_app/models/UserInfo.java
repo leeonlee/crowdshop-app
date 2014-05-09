@@ -15,19 +15,18 @@ public final class UserInfo {
 	@JsonProperty(value = "last_name")
 	public final String lastName;
 
-	@JsonCreator
-	public UserInfo(@JsonProperty("username") String username,
-	                @JsonProperty("first_name") String firstName,
-	                @JsonProperty("last_name") String lastName) {
-		if (username == null)
-			throw new NullPointerException("username");
-		if (firstName == null)
-			throw new NullPointerException("firstName");
-		if (lastName == null)
-			throw new NullPointerException("lastName");
+	protected UserInfo(String username, String firstName, String lastName){
 		this.username = username;
 		this.firstName = firstName;
 		this.lastName = lastName;
+	}
+
+	@JsonCreator
+	public static UserInfo maybeCreate(@JsonProperty("username") String username,
+	                @JsonProperty("first_name") String firstName,
+	                @JsonProperty("last_name") String lastName) {
+		return ((username == null) || (firstName == null) || (lastName == null))?
+			null : new UserInfo(username, firstName, lastName);
 	}
 
 	public static UserInfo createUserInfo(JSONObject jsonObject) throws JSONException {
