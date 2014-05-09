@@ -35,7 +35,11 @@ class ObjectMapperParser implements ObjectParser {
 
 	@Override
 	public Object parseAndClose(InputStream in, Charset charset, Type dataType) throws IOException {
-		return parseAndClose(in, charset, dataType.getClass());
+		try {
+			return objectMapper.readValue(in, objectMapper.constructType(dataType));
+		} finally {
+			in.close();
+		}
 	}
 
 	@Override
@@ -49,6 +53,10 @@ class ObjectMapperParser implements ObjectParser {
 
 	@Override
 	public Object parseAndClose(Reader reader, Type dataType) throws IOException {
-		return parseAndClose(reader, dataType.getClass());
+		try {
+			return objectMapper.readValue(reader, objectMapper.constructType(dataType));
+		} finally {
+			reader.close();
+		}
 	}
 }
