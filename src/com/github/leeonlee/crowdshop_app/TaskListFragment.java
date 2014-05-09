@@ -15,11 +15,14 @@ import com.github.leeonlee.crowdshop_app.models.IdObject;
 import com.github.leeonlee.crowdshop_app.models.UserInfo;
 import com.google.api.client.http.GenericUrl;
 import com.google.api.client.http.HttpRequest;
+import com.google.api.client.http.HttpRequestFactory;
 import com.octo.android.robospice.Jackson2GoogleHttpClientSpiceService;
 import com.octo.android.robospice.SpiceManager;
 import com.octo.android.robospice.persistence.DurationInMillis;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.PendingRequestListener;
+
+import java.io.IOException;
 
 /**
  * A fragment containing a list of tasks.
@@ -162,13 +165,11 @@ public abstract class TaskListFragment extends ListFragment {
 		}
 
 		@Override
-		public GetTaskResult[] loadDataFromNetwork() throws Exception {
-			HttpRequest httpRequest = getHttpRequestFactory().buildGetRequest(
+		protected HttpRequest getRequest(HttpRequestFactory factory) throws IOException {
+			return factory.buildGetRequest(
 					new GenericUrl(CrowdShopApplication.SERVER + '/' + cacheKey.first
 							+ "tasks/" + cacheKey.second)
 			);
-			httpRequest.setParser(new ObjectMapperParser());
-			return httpRequest.execute().parseAs(getResultType());
 		}
 	}
 

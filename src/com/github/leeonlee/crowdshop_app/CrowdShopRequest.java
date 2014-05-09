@@ -1,6 +1,10 @@
 package com.github.leeonlee.crowdshop_app;
 
+import com.google.api.client.http.HttpRequest;
+import com.google.api.client.http.HttpRequestFactory;
 import com.octo.android.robospice.request.googlehttpclient.GoogleHttpClientSpiceRequest;
+
+import java.io.IOException;
 
 /**
  * Represents a request in this app.
@@ -13,5 +17,15 @@ public abstract class CrowdShopRequest<Result, CacheKey> extends GoogleHttpClien
 	protected CrowdShopRequest(Class<Result> clazz, CacheKey cacheKey) {
 		super(clazz);
 		this.cacheKey = cacheKey;
+	}
+
+	protected abstract HttpRequest getRequest(HttpRequestFactory factory) throws IOException;
+
+	@Override
+	public final Result loadDataFromNetwork() throws IOException {
+		return getRequest(getHttpRequestFactory())
+				.setParser(new ObjectMapperParser())
+				.execute()
+				.parseAs(getResultType());
 	}
 }

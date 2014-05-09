@@ -17,10 +17,11 @@ import com.github.leeonlee.crowdshop_app.models.Success;
 import com.github.leeonlee.crowdshop_app.models.UserInfo;
 import com.google.api.client.http.GenericUrl;
 import com.google.api.client.http.HttpRequest;
+import com.google.api.client.http.HttpRequestFactory;
 import com.google.api.client.http.UrlEncodedContent;
-import com.google.api.client.util.ObjectParser;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -85,17 +86,14 @@ public class LoginActivity extends CrowdShopActivity {
 		}
 
 		@Override
-		public LoginResult loadDataFromNetwork() throws Exception {
+		protected HttpRequest getRequest(HttpRequestFactory factory) throws IOException {
 			Map<String, String> body = new HashMap<String, String>();
 			body.put("username", cacheKey.first);
 			body.put("password", cacheKey.second);
-			HttpRequest httpRequest = getHttpRequestFactory().buildPostRequest(
+			return factory.buildPostRequest(
 					new GenericUrl(URL),
 					new UrlEncodedContent(body)
 			);
-			ObjectParser parser = new ObjectMapperParser();
-			httpRequest.setParser(parser);
-			return httpRequest.execute().parseAs(getResultType());
 		}
 
 	}

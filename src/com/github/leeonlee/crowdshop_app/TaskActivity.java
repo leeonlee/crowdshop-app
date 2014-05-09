@@ -14,10 +14,11 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.github.leeonlee.crowdshop_app.models.Success;
 import com.google.api.client.http.GenericUrl;
 import com.google.api.client.http.HttpRequest;
+import com.google.api.client.http.HttpRequestFactory;
 import com.google.api.client.http.UrlEncodedContent;
-import com.google.api.client.util.ObjectParser;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -158,22 +159,19 @@ public class TaskActivity extends CrowdShopActivity {
 		}
 
 		@Override
-		public CreateTaskResult loadDataFromNetwork() throws Exception {
+		protected HttpRequest getRequest(HttpRequestFactory factory) throws IOException {
 			Map<String, Object> body = new HashMap<String, Object>();
 			body.put("username", cacheKey.username);
 			body.put("title", cacheKey.title);
 			body.put("desc", cacheKey.description);
 			body.put("threshold", cacheKey.budget);
 			body.put("reward", cacheKey.reward);
-
-			HttpRequest httpRequest = getHttpRequestFactory().buildPostRequest(
+			return factory.buildPostRequest(
 					new GenericUrl(URL),
 					new UrlEncodedContent(body)
 			);
-			ObjectParser parser = new ObjectMapperParser();
-			httpRequest.setParser(parser);
-			return httpRequest.execute().parseAs(getResultType());
 		}
+
 	}
 
 	private static final class CreateTaskFragment extends RequestDialogFragment<CreateTaskResult, CreateTaskRequest> {
