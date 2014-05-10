@@ -33,7 +33,7 @@ public class DetailActivity extends CrowdShopActivity {
 			public void onClick(View arg0) {
 				long userId = mApp.getThisUserId();
 				String username = mApp.getUserInfo(userId).username;
-				MyFragment.newInstance(username, userId).show(getSupportFragmentManager(), "dialog");
+				MyFragment.newInstance(username, mTaskId).show(getSupportFragmentManager(), "dialog");
 			}
 		});
 	}
@@ -106,7 +106,7 @@ public class DetailActivity extends CrowdShopActivity {
 		private static final String TASK_ID = CrowdShopApplication.PACKAGE_NAME + ".TASK_ID";
 
 		public MyFragment() {
-			super(JustSuccess.class, R.string.submitting);
+			super(JustSuccess.class, R.string.claiming);
 		}
 
 		public static MyFragment newInstance(String username, long taskId) {
@@ -128,7 +128,7 @@ public class DetailActivity extends CrowdShopActivity {
 		@Override
 		protected void onRequestFailure(SpiceException spiceException) {
 			Toast.makeText(getActivity(),
-					getString(R.string.submit_error, spiceException.getLocalizedMessage()),
+					getString(R.string.claim_error, spiceException.getLocalizedMessage()),
 					Toast.LENGTH_LONG
 			).show();
 		}
@@ -140,7 +140,7 @@ public class DetailActivity extends CrowdShopActivity {
 
 		@Override
 		protected void onRequestInvalid() {
-			Toast.makeText(getActivity(), R.string.submit_unknown, Toast.LENGTH_LONG).show();
+			Toast.makeText(getActivity(), R.string.claim_unknown, Toast.LENGTH_LONG).show();
 		}
 
 	}
