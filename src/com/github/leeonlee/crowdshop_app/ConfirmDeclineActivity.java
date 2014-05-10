@@ -111,8 +111,6 @@ public class ConfirmDeclineActivity extends CrowdShopActivity {
 	private static class MyFragment
 			extends RequestDialogFragment<Parameters, Void, JustSuccess> {
 
-		private static final String TASK_ID = CrowdShopApplication.PACKAGE_NAME + ".TASK_ID";
-
 		public MyFragment() {
 			super(JustSuccess.class, R.string.submitting,
 					R.string.submit_ok, R.string.submit_error, R.string.submit_unknown);

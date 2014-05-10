@@ -91,9 +91,6 @@ public class MoneyActivity extends CrowdShopActivity {
 	private static class MyFragment
 			extends RequestDialogFragment<Parameters, Void, JustSuccess> {
 
-		public static final String TASK_ID = CrowdShopApplication.PACKAGE_NAME + ".TASK_ID";
-		public static final String ACTUAL_PRICE = CrowdShopApplication.PACKAGE_NAME + ".ACTUAL_PRICE";
-
 		public MyFragment() {
 			super(JustSuccess.class, R.string.submitting,
 					R.string.submit_ok, R.string.submit_error, R.string.submit_unknown);

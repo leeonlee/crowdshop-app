@@ -101,9 +101,6 @@ public class DetailActivity extends CrowdShopActivity {
 	private static class MyFragment
 			extends RequestDialogFragment<Parameters, Void, JustSuccess> {
 
-		private static final String USERNAME = CrowdShopApplication.PACKAGE_NAME + ".USERNAME";
-		private static final String TASK_ID = CrowdShopApplication.PACKAGE_NAME + ".TASK_ID";
-
 		public MyFragment() {
 			super(JustSuccess.class, R.string.claiming,
 					R.string.claim_ok, R.string.claim_error, R.string.claim_unknown);

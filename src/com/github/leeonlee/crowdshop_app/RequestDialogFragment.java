@@ -24,6 +24,15 @@ import com.octo.android.robospice.request.listener.PendingRequestListener;
 public abstract class RequestDialogFragment<Parameters, Payload, Result extends PostResult<Payload>>
 		extends DialogFragment {
 
+	protected static final String ACTUAL_PRICE = CrowdShopApplication.PACKAGE_NAME + ".ACTUAL_PRICE";
+	protected static final String PASSWORD = CrowdShopApplication.PACKAGE_NAME + ".PASSWORD";
+	protected static final String USERNAME = CrowdShopApplication.PACKAGE_NAME + ".USERNAME";
+	protected static final String TITLE = CrowdShopApplication.PACKAGE_NAME + ".TITLE";
+	protected static final String DESCRIPTION = CrowdShopApplication.PACKAGE_NAME + ".DESCRIPTION";
+	protected static final String BUDGET = CrowdShopApplication.PACKAGE_NAME + ".BUDGET";
+	protected static final String REWARD = CrowdShopApplication.PACKAGE_NAME + ".REWARD";
+	protected static final String TASK_ID = CrowdShopApplication.PACKAGE_NAME + ".TASK_ID";
+
 	protected CrowdShopApplication mApp;
 
 	private static final String TAG = RequestDialogFragment.class.getSimpleName();

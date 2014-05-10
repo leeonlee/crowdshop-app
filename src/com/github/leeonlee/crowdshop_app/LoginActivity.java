@@ -99,9 +99,6 @@ public class LoginActivity extends CrowdShopActivity {
 	private static class MyFragment
 			extends RequestDialogFragment<Parameters, IdObject<UserInfo>, Result> {
 
-		public static final String USERNAME = CrowdShopApplication.PACKAGE_NAME + ".USERNAME";
-		public static final String PASSWORD = CrowdShopApplication.PACKAGE_NAME + ".PASSWORD";
-
 		public MyFragment() {
 			super(Result.class, R.string.authenticating,
 					R.string.login_ok, R.string.login_error, R.string.wrong_login);

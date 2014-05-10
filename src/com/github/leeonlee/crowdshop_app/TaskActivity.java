@@ -94,7 +94,7 @@ public class TaskActivity extends CrowdShopActivity {
 		});
 	}
 
-	public static final class Parameters {
+	private static class Parameters {
 
 		@Key
 		public final String username;
@@ -142,14 +142,8 @@ public class TaskActivity extends CrowdShopActivity {
 		}
 	}
 
-	private static final class MyFragment
+	private static class MyFragment
 			extends RequestDialogFragment<Parameters, Void, JustSuccess> {
-
-		private static final String USERNAME = CrowdShopApplication.PACKAGE_NAME + ".USERNAME";
-		private static final String TITLE = CrowdShopApplication.PACKAGE_NAME + ".TITLE";
-		private static final String DESCRIPTION = CrowdShopApplication.PACKAGE_NAME + ".DESCRIPTION";
-		private static final String BUDGET = CrowdShopApplication.PACKAGE_NAME + ".BUDGET";
-		private static final String REWARD = CrowdShopApplication.PACKAGE_NAME + ".REWARD";
 
 		public MyFragment() {
 			super(JustSuccess.class, R.string.submitting,
