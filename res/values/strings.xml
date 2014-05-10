@@ -26,5 +26,7 @@
     <string name="claim_ok">Claiming complete!</string>
     <string name="claim_error">Claim error: %s</string>
     <string name="claim_unknown">Unknown claim error: try reclaiming</string>
+    <string name="no_actual_price">Please enter a price (at most $%d)!</string>
+    <string name="bad_actual_price">The price must be at most $%d!</string>
 
 </resources>
