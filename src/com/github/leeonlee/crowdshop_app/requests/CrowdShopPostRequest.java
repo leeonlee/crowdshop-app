@@ -27,7 +27,7 @@ public final class CrowdShopPostRequest<CacheKey, Result> extends CrowdShopReque
 	}
 
 	@Override
-	protected HttpRequest getRequest(HttpRequestFactory factory) throws IOException {
+	protected HttpRequest getHttpRequest(HttpRequestFactory factory) throws IOException {
 		return factory.buildPostRequest(
 				new GenericUrl(CrowdShopApplication.SERVER + "/" + endpointString),
 				new UrlEncodedContent(cacheKey)

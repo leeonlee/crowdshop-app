@@ -166,7 +166,7 @@ public abstract class TaskListFragment extends ListFragment {
 		}
 
 		@Override
-		protected HttpRequest getRequest(HttpRequestFactory factory) throws IOException {
+		protected HttpRequest getHttpRequest(HttpRequestFactory factory) throws IOException {
 			return factory.buildGetRequest(
 					new GenericUrl(CrowdShopApplication.SERVER + '/' + cacheKey.first
 							+ "tasks/" + cacheKey.second)

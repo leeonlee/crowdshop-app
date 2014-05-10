@@ -20,11 +20,11 @@ public abstract class CrowdShopRequest<CacheKey, Result> extends GoogleHttpClien
 		this.cacheKey = cacheKey;
 	}
 
-	protected abstract HttpRequest getRequest(HttpRequestFactory factory) throws IOException;
+	protected abstract HttpRequest getHttpRequest(HttpRequestFactory factory) throws IOException;
 
 	@Override
 	public final Result loadDataFromNetwork() throws IOException {
-		return getRequest(getHttpRequestFactory())
+		return getHttpRequest(getHttpRequestFactory())
 				.setParser(new ObjectMapperParser())
 				.execute()
 				.parseAs(getResultType());
