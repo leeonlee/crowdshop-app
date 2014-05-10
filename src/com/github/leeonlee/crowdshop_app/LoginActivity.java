@@ -1,6 +1,5 @@
 package com.github.leeonlee.crowdshop_app;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -14,8 +13,8 @@ import com.github.leeonlee.crowdshop_app.json.IdObject;
 import com.github.leeonlee.crowdshop_app.json.PostResult;
 import com.github.leeonlee.crowdshop_app.models.UserInfo;
 import com.github.leeonlee.crowdshop_app.requests.CrowdShopPostRequest;
+import com.github.leeonlee.crowdshop_app.requests.CrowdShopRequest;
 import com.google.api.client.util.Key;
-import com.octo.android.robospice.persistence.exception.SpiceException;
 
 public class LoginActivity extends CrowdShopActivity {
 	EditText username;
@@ -61,7 +60,7 @@ public class LoginActivity extends CrowdShopActivity {
 		});
 	}
 
-	public static final class Parameters {
+	private static class Parameters {
 
 		@Key
 		public final String username;
@@ -97,52 +96,41 @@ public class LoginActivity extends CrowdShopActivity {
 	public static final class Result extends PostResult<IdObject<UserInfo>> {
 	}
 
-	public static final class MyFragment
-			extends RequestDialogFragment<
-			IdObject<UserInfo>, Result, CrowdShopPostRequest<Parameters, Result>> {
+	private static class MyFragment
+			extends RequestDialogFragment<Parameters, IdObject<UserInfo>, Result> {
 
 		public static final String USERNAME = CrowdShopApplication.PACKAGE_NAME + ".USERNAME";
 		public static final String PASSWORD = CrowdShopApplication.PACKAGE_NAME + ".PASSWORD";
 
 		public MyFragment() {
-			super(Result.class, R.string.authenticating);
+			super(Result.class, R.string.authenticating,
+					R.string.login_ok, R.string.login_error, R.string.wrong_login);
 		}
 
 		public static MyFragment newInstance(String username, String password) {
 			MyFragment fragment = new MyFragment();
-			Bundle args = new Bundle(2);
-			args.putString(USERNAME, username);
-			args.putString(PASSWORD, password);
-			fragment.setArguments(args);
+			fragment.setArguments(new Parameters(username, password));
 			return fragment;
 		}
 
 		@Override
-		protected CrowdShopPostRequest<Parameters, Result> newRequest() {
-			Bundle args = getArguments();
+		protected void setArguments(Parameters params) {
+			Bundle args = new Bundle(2);
+			args.putString(USERNAME, params.username);
+			args.putString(PASSWORD, params.password);
+			setArguments(args);
+		}
+
+		@Override
+		protected CrowdShopRequest<Parameters, Result> newRequest(Bundle args) {
 			Parameters params = new Parameters(args.getString(USERNAME), args.getString(PASSWORD));
 			return CrowdShopPostRequest.make(Result.class, params, "loginview");
 		}
 
 		@Override
-		public void onRequestFailure(SpiceException spiceException) {
-			Toast.makeText(getActivity(),
-					getString(R.string.login_error, spiceException.getLocalizedMessage()),
-					Toast.LENGTH_LONG
-			).show();
-		}
-
-		@Override
-		protected void onRequestInvalid() {
-			Toast.makeText(getActivity(), R.string.wrong_login, Toast.LENGTH_LONG).show();
-		}
-
-		@Override
 		protected void onRequestSuccess(IdObject<UserInfo> userInfoIdObject) {
 			mApp.loadUser(userInfoIdObject.id, userInfoIdObject.object);
-			Activity activity = getActivity();
-			activity.startActivity(new Intent(activity, MainActivity.class));
-			activity.finish();
+			startActivity(new Intent(getActivity(), MainActivity.class));
 		}
 
 	}

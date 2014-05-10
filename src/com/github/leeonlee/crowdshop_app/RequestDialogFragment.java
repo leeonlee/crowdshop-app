@@ -1,15 +1,18 @@
 package com.github.leeonlee.crowdshop_app;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.util.Log;
+import android.widget.Toast;
 import com.github.leeonlee.crowdshop_app.json.PostResult;
 import com.github.leeonlee.crowdshop_app.requests.CrowdShopRequest;
 import com.octo.android.robospice.Jackson2GoogleHttpClientSpiceService;
 import com.octo.android.robospice.SpiceManager;
+import com.octo.android.robospice.exception.NetworkException;
 import com.octo.android.robospice.exception.RequestCancelledException;
 import com.octo.android.robospice.persistence.DurationInMillis;
 import com.octo.android.robospice.persistence.exception.SpiceException;
@@ -19,31 +22,33 @@ import com.octo.android.robospice.request.listener.PendingRequestListener;
  * A fragment that displays a progress dialog
  * for a request.
  */
-public abstract class RequestDialogFragment<
-		Payload,
-		Result extends PostResult<Payload>,
-		Request extends CrowdShopRequest<?, Result>
-		> extends DialogFragment {
+public abstract class RequestDialogFragment<Parameters, Payload, Result extends PostResult<Payload>>
+		extends DialogFragment {
 
 	protected CrowdShopApplication mApp;
 
 	private static final String TAG = RequestDialogFragment.class.getSimpleName();
 	private final SpiceManager mSpiceManager = new SpiceManager(Jackson2GoogleHttpClientSpiceService.class);
 	private final Class<Result> mResultClass;
-	private Request mRequest;
-	private final int mTitleId;
+	private CrowdShopRequest mRequest;
+	private final int mTitleId, mSuccessId, mKnownErrorId, mUnknownErrorId;
 
-	protected RequestDialogFragment(Class<Result> resultClass, int titleId) {
+	protected RequestDialogFragment(Class<Result> resultClass,
+	                                int titleId,
+	                                int successId, int knownErrorId, int unknownErrorId) {
 		super();
 		mResultClass = resultClass;
 		mTitleId = titleId;
+		mSuccessId = successId;
+		mKnownErrorId = knownErrorId;
+		mUnknownErrorId = unknownErrorId;
 	}
 
 	@Override
 	public final void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		mApp = (CrowdShopApplication)getActivity().getApplication();
-		mRequest = newRequest();
+		mRequest = newRequest(getArguments());
 	}
 
 	@Override
@@ -61,17 +66,26 @@ public abstract class RequestDialogFragment<
 			@Override
 			public void onRequestFailure(SpiceException spiceException) {
 				dismiss();
-				if (!(spiceException instanceof RequestCancelledException))
-					RequestDialogFragment.this.onRequestFailure(spiceException);
+				if (!(spiceException instanceof RequestCancelledException)) {
+					Throwable cause = spiceException.getCause();
+					Throwable throwable = (spiceException instanceof NetworkException && cause != null)?
+							cause : spiceException;
+					Toast.makeText(getActivity(),
+							getString(mKnownErrorId, throwable.getLocalizedMessage()), Toast.LENGTH_LONG).show();
+				}
 			}
 
 			@Override
 			public void onRequestSuccess(Result result) {
 				dismiss();
-				if (result.success == PostResult.Success.success)
+				if (result.success == PostResult.Success.success) {
+					Activity activity = getActivity();
+					Toast.makeText(activity, mSuccessId, Toast.LENGTH_SHORT).show();
 					RequestDialogFragment.this.onRequestSuccess(result.payload);
+					activity.finish();
+				}
 				else
-					RequestDialogFragment.this.onRequestInvalid();
+					Toast.makeText(getActivity(), mUnknownErrorId, Toast.LENGTH_LONG).show();
 			}
 		};
 		mSpiceManager.addListenerIfPending(mResultClass, mRequest.cacheKey, listener);
@@ -97,9 +111,8 @@ public abstract class RequestDialogFragment<
 		mSpiceManager.cancel(mResultClass, mRequest.cacheKey);
 	}
 
-	protected abstract Request newRequest();
-	protected abstract void onRequestFailure(SpiceException spiceException);
+	protected abstract void setArguments(Parameters params);
+	protected abstract CrowdShopRequest<Parameters, Result> newRequest(Bundle args);
 	protected abstract void onRequestSuccess(Payload payload);
-	protected abstract void onRequestInvalid();
 
 }

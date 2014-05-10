@@ -1,6 +1,5 @@
 package com.github.leeonlee.crowdshop_app;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -12,8 +11,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 import com.github.leeonlee.crowdshop_app.json.JustSuccess;
 import com.github.leeonlee.crowdshop_app.requests.CrowdShopPostRequest;
+import com.github.leeonlee.crowdshop_app.requests.CrowdShopRequest;
 import com.google.api.client.util.Key;
-import com.octo.android.robospice.persistence.exception.SpiceException;
 
 public class TaskActivity extends CrowdShopActivity {
 	Button submit;
@@ -144,7 +143,7 @@ public class TaskActivity extends CrowdShopActivity {
 	}
 
 	private static final class MyFragment
-			extends RequestDialogFragment<Void, JustSuccess, CrowdShopPostRequest<Parameters, JustSuccess>> {
+			extends RequestDialogFragment<Parameters, Void, JustSuccess> {
 
 		private static final String USERNAME = CrowdShopApplication.PACKAGE_NAME + ".USERNAME";
 		private static final String TITLE = CrowdShopApplication.PACKAGE_NAME + ".TITLE";
@@ -153,25 +152,30 @@ public class TaskActivity extends CrowdShopActivity {
 		private static final String REWARD = CrowdShopApplication.PACKAGE_NAME + ".REWARD";
 
 		public MyFragment() {
-			super(JustSuccess.class, R.string.submitting);
+			super(JustSuccess.class, R.string.submitting,
+					R.string.submit_ok, R.string.submit_error, R.string.submit_unknown);
 		}
 
 		public static MyFragment newInstance(String username, String title, String description,
 		                                             int budget, int reward) {
 			MyFragment fragment = new MyFragment();
-			Bundle args = new Bundle(5);
-			args.putString(USERNAME, username);
-			args.putString(TITLE, title);
-			args.putString(DESCRIPTION, description);
-			args.putInt(BUDGET, budget);
-			args.putInt(REWARD, reward);
-			fragment.setArguments(args);
+			fragment.setArguments(new Parameters(username, title, description, budget, reward));
 			return fragment;
 		}
 
 		@Override
-		protected CrowdShopPostRequest<Parameters, JustSuccess> newRequest() {
-			Bundle args = getArguments();
+		protected void setArguments(Parameters params) {
+			Bundle args = new Bundle(5);
+			args.putString(USERNAME, params.username);
+			args.putString(TITLE, params.title);
+			args.putString(DESCRIPTION, params.description);
+			args.putInt(BUDGET, params.budget);
+			args.putInt(REWARD, params.reward);
+			setArguments(args);
+		}
+
+		@Override
+		protected CrowdShopRequest<Parameters, JustSuccess> newRequest(Bundle args) {
 			Parameters params = new Parameters(args.getString(USERNAME),
 					args.getString(TITLE), args.getString(DESCRIPTION),
 					args.getInt(BUDGET), args.getInt(REWARD));
@@ -179,23 +183,7 @@ public class TaskActivity extends CrowdShopActivity {
 		}
 
 		@Override
-		protected void onRequestFailure(SpiceException spiceException) {
-			Toast.makeText(getActivity(),
-					getString(R.string.submit_error, spiceException.getLocalizedMessage()),
-					Toast.LENGTH_LONG
-			).show();
-		}
-
-		@Override
 		protected void onRequestSuccess(Void aVoid) {
-			Activity activity = getActivity();
-			Toast.makeText(activity, R.string.submit_ok, Toast.LENGTH_SHORT).show();
-			activity.finish();
-		}
-
-		@Override
-		protected void onRequestInvalid() {
-			Toast.makeText(getActivity(), R.string.submit_unknown, Toast.LENGTH_LONG).show();
 		}
 
 	}

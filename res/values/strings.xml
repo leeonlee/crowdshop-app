@@ -11,6 +11,7 @@
     <string name="no_username">Enter a username</string>
     <string name="no_password">Enter a password</string>
     <string name="authenticating">Authenticating…</string>
+    <string name="login_ok">Welcome!</string>
     <string name="wrong_login">Invalid credentials</string>
     <string name="login_error">Couldn\'t log in: %s</string>
     <string name="empty_title">Please tell us what you need!</string>
