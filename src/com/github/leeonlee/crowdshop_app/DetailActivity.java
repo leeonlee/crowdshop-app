@@ -135,6 +135,7 @@ public class DetailActivity extends CrowdShopActivity {
 
 		@Override
 		protected void onRequestSuccess(Void aVoid) {
+			Toast.makeText(getActivity(), R.string.claim_ok, Toast.LENGTH_SHORT).show();
 			getActivity().finish();
 		}
 

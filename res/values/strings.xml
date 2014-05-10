@@ -10,7 +10,7 @@
     <string name="back_to_cancel">Hit back to cancel</string>
     <string name="no_username">Enter a username</string>
     <string name="no_password">Enter a password</string>
-    <string name="authenticating">Authenticating...</string>
+    <string name="authenticating">Authenticating…</string>
     <string name="wrong_login">Invalid credentials</string>
     <string name="login_error">Couldn\'t log in: %s</string>
     <string name="empty_title">Please tell us what you need!</string>
@@ -18,11 +18,11 @@
     <string name="empty_reward">Please enter a reward!</string>
     <string name="bad_budget">Budget can be at most $%d</string>
     <string name="bad_reward">Budget can be at most $%d</string>
-    <string name="submitting">Submitting...</string>
+    <string name="submitting">Submitting…</string>
     <string name="submit_ok">Submission complete!</string>
     <string name="submit_error">Submission error: %s</string>
     <string name="submit_unknown">Unknown submission error; try resubmitting</string>
-    <string name="claiming">Claiming task...</string>
+    <string name="claiming">Claiming task…</string>
     <string name="claim_ok">Claiming complete!</string>
     <string name="claim_error">Claim error: %s</string>
     <string name="claim_unknown">Unknown claim error: try reclaiming</string>
