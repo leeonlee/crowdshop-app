@@ -11,16 +11,9 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.github.leeonlee.crowdshop_app.json.JustSuccess;
-import com.github.leeonlee.crowdshop_app.requests.CrowdShopRequest;
-import com.google.api.client.http.GenericUrl;
-import com.google.api.client.http.HttpRequest;
-import com.google.api.client.http.HttpRequestFactory;
-import com.google.api.client.http.UrlEncodedContent;
+import com.github.leeonlee.crowdshop_app.requests.CrowdShopPostRequest;
+import com.google.api.client.util.Key;
 import com.octo.android.robospice.persistence.exception.SpiceException;
-
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 public class TaskActivity extends CrowdShopActivity {
 	Button submit;
@@ -102,12 +95,17 @@ public class TaskActivity extends CrowdShopActivity {
 		});
 	}
 
-	private static final class Parameters {
+	public static final class Parameters {
 
+		@Key
 		public final String username;
+		@Key
 		public final String title;
+		@Key("desc")
 		public final String description;
+		@Key("threshold")
 		public final int budget;
+		@Key
 		public final int reward;
 
 		public Parameters(String username, String title, String description, int budget, int reward) {
@@ -145,31 +143,8 @@ public class TaskActivity extends CrowdShopActivity {
 		}
 	}
 
-	private static final class Request extends CrowdShopRequest<Parameters, JustSuccess> {
-
-		private static final String URL = CrowdShopApplication.SERVER + "/createtask";
-
-		public Request(String username, String title, String description, int budget, int reward) {
-			super(JustSuccess.class, new Parameters(username, title, description, budget, reward));
-		}
-
-		@Override
-		protected HttpRequest getRequest(HttpRequestFactory factory) throws IOException {
-			Map<String, Object> body = new HashMap<String, Object>();
-			body.put("username", cacheKey.username);
-			body.put("title", cacheKey.title);
-			body.put("desc", cacheKey.description);
-			body.put("threshold", cacheKey.budget);
-			body.put("reward", cacheKey.reward);
-			return factory.buildPostRequest(
-					new GenericUrl(URL),
-					new UrlEncodedContent(body)
-			);
-		}
-
-	}
-
-	private static final class MyFragment extends RequestDialogFragment<Void, JustSuccess, Request> {
+	private static final class MyFragment
+			extends RequestDialogFragment<Void, JustSuccess, CrowdShopPostRequest<Parameters, JustSuccess>> {
 
 		private static final String USERNAME = CrowdShopApplication.PACKAGE_NAME + ".USERNAME";
 		private static final String TITLE = CrowdShopApplication.PACKAGE_NAME + ".TITLE";
@@ -195,10 +170,12 @@ public class TaskActivity extends CrowdShopActivity {
 		}
 
 		@Override
-		protected Request newRequest() {
+		protected CrowdShopPostRequest<Parameters, JustSuccess> newRequest() {
 			Bundle args = getArguments();
-			return new Request(args.getString(USERNAME), args.getString(TITLE), args.getString(DESCRIPTION),
+			Parameters params = new Parameters(args.getString(USERNAME),
+					args.getString(TITLE), args.getString(DESCRIPTION),
 					args.getInt(BUDGET), args.getInt(REWARD));
+			return CrowdShopPostRequest.make(JustSuccess.class, params, "createtask");
 		}
 
 		@Override
