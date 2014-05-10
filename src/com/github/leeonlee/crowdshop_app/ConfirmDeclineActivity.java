@@ -2,28 +2,19 @@ package com.github.leeonlee.crowdshop_app;
 
 import android.app.ProgressDialog;
 import android.graphics.Typeface;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
+import com.github.leeonlee.crowdshop_app.json.JustSuccess;
 import com.github.leeonlee.crowdshop_app.models.TaskInfo;
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
+import com.github.leeonlee.crowdshop_app.requests.CrowdShopPostRequest;
+import com.github.leeonlee.crowdshop_app.requests.CrowdShopRequest;
+import com.google.api.client.util.Key;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.text.NumberFormat;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
 
 public class ConfirmDeclineActivity extends CrowdShopActivity {
@@ -77,7 +68,7 @@ public class ConfirmDeclineActivity extends CrowdShopActivity {
 
 			@Override
 			public void onClick(View arg0) {
-				new Confirm().execute();
+				MyFragment.newInstance(mTaskId).show(getSupportFragmentManager(), "dialog");
 			}
 		});
 
@@ -91,41 +82,65 @@ public class ConfirmDeclineActivity extends CrowdShopActivity {
 		});
 	}
 
-	private class Confirm extends AsyncTask<Void, Void, Boolean> {
-		public void onPreExecute() {
-			pd = new ProgressDialog(ConfirmDeclineActivity.this);
-			pd.setCancelable(true);
-			pd.setMessage("Submitting..");
-			pd.show();
+	private static class Parameters {
+		@Key("task_id")
+		public final long taskId;
+
+		public Parameters(long taskId) {
+			this.taskId = taskId;
 		}
 
 		@Override
-		protected Boolean doInBackground(Void... params) {
-			DefaultHttpClient httpclient = new DefaultHttpClient();
-			HttpPost httppostreq = new HttpPost(CrowdShopApplication.SERVER + "/confirmpurchase");
-			try {
-				List<NameValuePair> pairs = new ArrayList<NameValuePair>();
-				pairs.add(new BasicNameValuePair("task_id", "" + mTaskId));
-				httppostreq.setEntity(new UrlEncodedFormEntity(pairs));
-				HttpResponse httpresponse = httpclient.execute(httppostreq);
-				return httpresponse.getStatusLine().getStatusCode() == 200;
-			} catch (UnsupportedEncodingException e1) {
-				throw new RuntimeException(e1);
-			} catch (ClientProtocolException e) {
-				throw new RuntimeException(e);
-			} catch (IOException e) {
-				throw new RuntimeException(e);
-			}
+		public boolean equals(Object o) {
+			if (this == o) return true;
+			if (o == null || getClass() != o.getClass()) return false;
+
+			Parameters that = (Parameters) o;
+
+			if (taskId != that.taskId) return false;
+
+			return true;
 		}
 
-		protected void onPostExecute(Boolean result) {
-			pd.cancel();
-			int duration = Toast.LENGTH_SHORT;
-			Toast toast = Toast
-					.makeText(mApp, "Submission complete!", duration);
-			toast.show();
-			finish();
+		@Override
+		public int hashCode() {
+			return (int) (taskId ^ (taskId >>> 32));
 		}
+	}
+
+	private static class MyFragment
+			extends RequestDialogFragment<Parameters, Void, JustSuccess> {
+
+		private static final String TASK_ID = CrowdShopApplication.PACKAGE_NAME + ".TASK_ID";
+
+		public MyFragment() {
+			super(JustSuccess.class, R.string.submitting,
+					R.string.submit_ok, R.string.submit_error, R.string.submit_unknown);
+		}
+
+		public static MyFragment newInstance(long taskId) {
+			MyFragment fragment = new MyFragment();
+			fragment.setArguments(new Parameters(taskId));
+			return fragment;
+		}
+
+		@Override
+		protected void setArguments(Parameters params) {
+			Bundle args = new Bundle(1);
+			args.putLong(TASK_ID, params.taskId);
+			setArguments(args);
+		}
+
+		@Override
+		protected CrowdShopRequest<Parameters, JustSuccess> newRequest(Bundle args) {
+			Parameters params = new Parameters(args.getLong(TASK_ID));
+			return CrowdShopPostRequest.make(JustSuccess.class, params, "confirmpurchase");
+		}
+
+		@Override
+		protected void onRequestSuccess(Void aVoid) {
+		}
+
 	}
 
 }

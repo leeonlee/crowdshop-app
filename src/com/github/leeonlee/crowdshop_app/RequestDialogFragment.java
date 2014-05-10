@@ -12,7 +12,6 @@ import com.github.leeonlee.crowdshop_app.json.PostResult;
 import com.github.leeonlee.crowdshop_app.requests.CrowdShopRequest;
 import com.octo.android.robospice.Jackson2GoogleHttpClientSpiceService;
 import com.octo.android.robospice.SpiceManager;
-import com.octo.android.robospice.exception.NetworkException;
 import com.octo.android.robospice.exception.RequestCancelledException;
 import com.octo.android.robospice.persistence.DurationInMillis;
 import com.octo.android.robospice.persistence.exception.SpiceException;
@@ -67,11 +66,8 @@ public abstract class RequestDialogFragment<Parameters, Payload, Result extends 
 			public void onRequestFailure(SpiceException spiceException) {
 				dismiss();
 				if (!(spiceException instanceof RequestCancelledException)) {
-					Throwable cause = spiceException.getCause();
-					Throwable throwable = (spiceException instanceof NetworkException && cause != null)?
-							cause : spiceException;
 					Toast.makeText(getActivity(),
-							getString(mKnownErrorId, throwable.getLocalizedMessage()), Toast.LENGTH_LONG).show();
+							getString(mKnownErrorId, spiceException.getLocalizedMessage()), Toast.LENGTH_LONG).show();
 				}
 			}
 
